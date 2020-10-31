@@ -1,0 +1,8 @@
+/app/config/local.neon
+*.db
+*.htaccess
+composer.lock
+.idea/
+/log/
+/temp/
+/vendor/
