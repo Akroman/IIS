@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `reservation_id` int(11) NOT NULL AUTO_INCREMENT,
   `room_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `reservation_date_from` datetime NOT NULL,
-  `reservation_date_to` datetime NOT NULL,
+  `reservation_date_from` datetime NULL DEFAULT NULL,
+  `reservation_date_to` datetime NULL DEFAULT NULL,
   `reservation_confirmed` tinyint(4) NOT NULL,
   `reservation_check_in` tinyint(4) NOT NULL,
   `reservation_check_out` tinyint(4) NOT NULL,
@@ -87,8 +87,6 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   `room_id` int(11) NOT NULL AUTO_INCREMENT,
   `room_hotel_id` int(11) NOT NULL,
   `room_capacity` tinyint(4) NOT NULL,
-  `room_equipment` text NOT NULL,
-  `room_image_path` varchar(255) NOT NULL,
   `room_price` double NOT NULL,
   `room_type` int(11) NOT NULL,
   PRIMARY KEY (`room_id`),
@@ -121,10 +119,10 @@ DROP TABLE IF EXISTS `room_images`;
 CREATE TABLE IF NOT EXISTS `room_images` (
   `image_id` int(11) NOT NULL AUTO_INCREMENT,
   `image_room_id` int(11) NOT NULL,
-  `image_path` varchar(255) COLLATE latin2_czech_cs NOT NULL,
+  `image_path` varchar(255) COLLATE utf8 NOT NULL,
   PRIMARY KEY (`image_id`),
   KEY `image_room_id_fk` (`image_room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2 COLLATE=latin2_czech_cs;
+) ENGINE=InnoDB DEFAULT CHARSET=latin2 COLLATE=utf8;
 
 -- --------------------------------------------------------
 

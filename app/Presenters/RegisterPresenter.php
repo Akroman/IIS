@@ -28,26 +28,31 @@ class RegisterPresenter extends BasePresenter
     }
 
 
-
-    protected function createComponentRegisterForm()
+    /**
+     * Registrační formulář
+     * @return Form
+     */
+    protected function createComponentRegisterForm(): Form
     {
         $form = new Form;
 
         $form->addText(USER_NAME, 'Jméno')
-            ->setRequired();
+            ->setRequired('Prosím vyplňte jméno');
 
         $form->addText(USER_SURNAME, 'Příjmení')
-            ->setRequired();
+            ->setRequired('Prosím vyplňte příjmení');
 
         $form->addText(USER_PHONE, 'Telefon')
-            ->setRequired();
+            ->setRequired('Prosím vyplňte telefon');
 
         $form->addText(USER_EMAIL, 'Email')
-            ->setRequired();
+            ->setRequired('Prosím vyplňte email');
 
-        $form->addText(USER_LOGIN, 'Login');
+        $form->addText(USER_LOGIN, 'Login')
+            ->setRequired('Prosím vyplňte login');
 
-        $form->addPassword(USER_PASSWORD, 'Heslo');
+        $form->addPassword(USER_PASSWORD, 'Heslo')
+            ->setRequired('Prosím vyplňte heslo');
 
         $form->addSubmit('send', 'Zaregistrovat');
 
@@ -57,8 +62,11 @@ class RegisterPresenter extends BasePresenter
     }
 
 
-
-    public function onRegisterFormSuccess(Form $form)
+    /**
+     * Callback pro zpracování registračního formuláře, zahashuje uživateli heslo a pokusí se vytvořit uživatele
+     * @param Form $form
+     */
+    public function onRegisterFormSuccess(Form $form): void
     {
         $values = $form->getValues(TRUE);
         $values[USER_PASSWORD] = $this->passwords->hash($values[USER_PASSWORD]);
@@ -69,7 +77,6 @@ class RegisterPresenter extends BasePresenter
         } catch (\PDOException $exception) {
             \Tracy\Debugger::barDump($exception);
             $this->flashMessage('Při registraci došlo k chybě', 'error');
-            $this->redirect('this');
         }
 
         $this->flashMessage('Registrace proběhla úspěšně', 'success');

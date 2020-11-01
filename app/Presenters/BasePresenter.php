@@ -9,9 +9,11 @@ use HotelSystem\Model\Repository\HotelRepository;
 use HotelSystem\Model\Repository\ReservationRepository;
 use HotelSystem\Model\Repository\RoomRepository;
 use HotelSystem\Model\Repository\UserRepository;
-use Nette\Security\Passwords;
+use Nette\Security\AuthenticationException;
+use Nette\Security\IUserStorage;
+use \Nette\Application\UI\Form;
 
-class BasePresenter extends \Nette\Application\UI\Presenter
+abstract class BasePresenter extends \Nette\Application\UI\Presenter
 {
     /** @var UserRepository */
     protected $userRepository;
@@ -29,6 +31,9 @@ class BasePresenter extends \Nette\Application\UI\Presenter
     protected $loggedUser;
 
 
+    /**
+     * Inject metody pro repository
+     */
 
     public function injectUserRepository(UserRepository $userRepository)
     {
@@ -48,5 +53,60 @@ class BasePresenter extends \Nette\Application\UI\Presenter
     public function injectHotelRepository(HotelRepository $hotelRepository)
     {
         $this->hotelRepository = $hotelRepository;
+    }
+
+
+    /**
+     * Form pro přihlášení uživatele
+     * @return Form
+     */
+    protected function createComponentLoginForm(): Form
+    {
+        $form = new Form;
+
+        $form->addText(USER_LOGIN, 'Login')
+            ->setRequired('Prosím vyplňte login');
+
+        $form->addPassword(USER_PASSWORD, 'Heslo')
+            ->setRequired('Prosím vyplňte heslo');
+
+        $form->addCheckbox('permanently', 'Přihlásit trvale');
+
+        $form->addSubmit('signin', 'Přihlásit');
+        $form->onSuccess[] = function (Form $form) {
+            $values = $form->getValues(TRUE);
+            try {
+                $this->getUser()->login($values[USER_LOGIN], $values[USER_PASSWORD]);
+                $this->loggedUser = $this->userRepository->getByID($this->getUser()->getId());
+                if ($values['permanently']) {
+                    $this->getUser()->setExpiration('+14 days');
+                } else {
+                    $this->getUser()->setExpiration('+60 minutes', IUserStorage::CLEAR_IDENTITY);
+                }
+                $this->redirect('this');
+            } catch (AuthenticationException $exception) {
+                $form->addError($exception->getMessage());
+            }
+        };
+        return $form;
+    }
+
+
+    /**
+     * Form pro odhlášení uživatele
+     * @return Form
+     */
+    protected function createComponentLogoutForm(): Form
+    {
+        $form = new Form;
+
+        $form->addSubmit('logout', 'Odhlásit');
+        $form->onSuccess[] = function (Form $form) {
+            if ($this->getUser()->isLoggedIn()) {
+                $this->getUser()->logout();
+            }
+            $this->redirect('this');
+        };
+        return $form;
     }
 }
