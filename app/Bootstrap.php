@@ -10,6 +10,7 @@ use Nextras\Forms\Controls;
 use Nextras\FormComponents;
 
 require_once __DIR__ . '/Constants/DatabaseConstants.php';
+require_once __DIR__ . '/Constants/Paths.php';
 
 
 class Bootstrap

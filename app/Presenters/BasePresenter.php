@@ -56,6 +56,14 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
     }
 
 
+
+    protected function startup()
+    {
+        parent::startup();
+        $this->loggedUser = $this->userRepository->getByID($this->getUser()->getId());
+    }
+
+
     /**
      * Form pro přihlášení uživatele
      * @return Form
@@ -70,7 +78,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
         $form->addPassword(USER_PASSWORD, 'Heslo')
             ->setRequired('Prosím vyplňte heslo');
 
-        $form->addCheckbox('permanently', 'Přihlásit trvale');
+        $form->addCheckbox('permanently', 'Zapamatovat');
 
         $form->addSubmit('signin', 'Přihlásit');
         $form->onSuccess[] = function (Form $form) {
@@ -103,7 +111,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
         $form->addSubmit('logout', 'Odhlásit');
         $form->onSuccess[] = function (Form $form) {
             if ($this->getUser()->isLoggedIn()) {
-                $this->getUser()->logout();
+                $this->getUser()->logout(TRUE);
             }
             $this->redirect('this');
         };

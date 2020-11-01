@@ -140,9 +140,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_login` varchar(255) NOT NULL,
   `user_password` varchar(255) NOT NULL,
   `user_registered_date` datetime DEFAULT NULL,
-  `user_role` int(11) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
-  KEY `user_role_id` (`user_role`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -151,8 +149,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Struktura tabulky `user_roles`
 --
 
-DROP TABLE IF EXISTS `user_roles`;
-CREATE TABLE IF NOT EXISTS `user_roles` (
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE IF NOT EXISTS `roles` (
   `role_id` int(11) NOT NULL,
   `role_name` varchar(255) NOT NULL,
   PRIMARY KEY (`role_id`)
@@ -194,13 +192,20 @@ ALTER TABLE `room_equipment`
 ALTER TABLE `room_images`
   ADD CONSTRAINT `image_room_id_fk` FOREIGN KEY (`image_room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Omezení pro tabulku `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `user_role_id` FOREIGN KEY (`user_role`) REFERENCES `user_roles` (`role_id`) ON UPDATE CASCADE;
-COMMIT;
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+--
+-- Vložení uživatelských oprávnění
+--
+INSERT INTO `roles` (`role_id`, `role_name`) VALUES ('1', 'Customer'), ('2', 'Receptionist'), ('3', 'Owner'), ('4', 'Admin');
+
+DROP TABLE IF EXISTS `user_roles`;
+CREATE TABLE `user_roles` (
+    `user_role_id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `role_id` INT NOT NULL,
+    PRIMARY KEY (`user_role_id`)
+) ENGINE = InnoDB;

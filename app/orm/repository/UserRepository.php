@@ -5,15 +5,24 @@ namespace HotelSystem\Model\Repository;
 
 
 use HotelSystem\Model\Entity\User;
+use HotelSystem\Utils\DatabaseUtils;
 use Nette\Database\Context as NdbContext;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IAuthenticator;
+use Nette\Security\IAuthorizator;
 use Nette\Security\Identity;
 use Nette\Security\IIdentity;
 use Nette\Security\Passwords;
+use YetORM\Entity;
 
-class UserRepository extends BaseRepository implements IAuthenticator
+class UserRepository extends BaseRepository implements IAuthenticator, IAuthorizator
 {
+    const
+        ROLE_CUSTOMER = 'Customer',
+        ROLE_RECEPTIONIST = 'Receptionist',
+        ROLE_OWNER = 'Owner',
+        ROLE_ADMIN = 'Admin';
+
     /** @var Passwords */
     private $passwords;
 
@@ -43,8 +52,82 @@ class UserRepository extends BaseRepository implements IAuthenticator
         /** @var $user User */
         $user = $this->createEntity($row);
         $array = $row->toArray();
-        unset($row[USER_PASSWORD]);
+        unset($array[USER_PASSWORD]);
 
-        return new Identity($user->getId(), [], $array);
+        return new Identity($user->getId(), $user->getRoles(), $array);
+    }
+
+
+
+    public function isAllowed($role, $resource, $privilege): bool
+    {
+        if ($role === self::ROLE_ADMIN) {
+            return TRUE;
+        }
+
+        if ($role === self::ROLE_OWNER) {
+            if ($resource === 'hotel') {
+                return TRUE;
+            }
+            if ($resource === 'room') {
+                return TRUE;
+            }
+        }
+
+        if ($role === self::ROLE_RECEPTIONIST || $role === self::ROLE_OWNER) {
+            if ($resource === 'reservation') {
+                return TRUE;
+            }
+            if ($resource === 'user' && $privilege === 'overview') {
+                return TRUE;
+            }
+        }
+
+        if ($role === self::ROLE_CUSTOMER || self::ROLE_RECEPTIONIST || self::ROLE_OWNER) {
+            if ($resource === 'reservation' && $privilege === 'view') {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+    }
+
+
+    /**
+     * Override persist kvůli vložení oprávnění do mezitabulky
+     * @param Entity $entity
+     * @return bool|void
+     */
+    public function persist(Entity $entity)
+    {
+        /** @var $entity User */
+        $this->transaction(function () use ($entity) {
+            parent::persist($entity);
+
+            /**
+             * Nejdříve se podíváme, zda uživateli nemáme nějaké oprávnění smazat (snižujeme mu oprávnění)
+             */
+            foreach ($entity->getRoles() as $roleId => $roleName) {
+                if (!in_array($roleId, $entity->getRolesToInsert())) {
+                    $this->getTable(TABLE_USER_ROLES)
+                        ->where(USER_ID, $entity->getId())
+                        ->where(ROLE_ID, $roleId)
+                        ->delete();
+                }
+            }
+
+            /**
+             * Potom vložíme nová oprávnění
+             */
+            foreach ($entity->getRolesToInsert() as $role) {
+                DatabaseUtils::insertOrUpdate($this->database, TABLE_USER_ROLES, [
+                    USER_ID => $entity->getId(),
+                    ROLE_ID => $role
+                ], [
+                    USER_ID => $entity->getId(),
+                    ROLE_ID => $role
+                ]);
+            }
+        });
     }
 }

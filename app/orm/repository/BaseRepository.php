@@ -28,7 +28,7 @@ class BaseRepository extends \YetORM\Repository
      */
     public function getByID($id)
     {
-        $row = $this->getTable(TABLE_HOTELS)->get($id);
+        $row = $this->getTable()->get($id);
         return $this->createEntity($row);
     }
 

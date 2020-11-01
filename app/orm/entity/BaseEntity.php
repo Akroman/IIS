@@ -38,7 +38,7 @@ abstract class BaseEntity extends \YetORM\Entity
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->get($this->idColumn);
     }
@@ -74,6 +74,15 @@ abstract class BaseEntity extends \YetORM\Entity
      */
     public function getData(): array
     {
-        return $this->record->toArray();
+        return $this->record->getRow()
+            ? $this->record->getRow()->toArray()
+            : [];
+    }
+
+
+
+    public function isNew(): bool
+    {
+        return !(bool) $this->getId();
     }
 }

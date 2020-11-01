@@ -1,1 +1,7 @@
+{layout '../@layout.latte'}
 
+{block content}
+    {control loginForm}
+    {control logoutForm}
+    <a n:href="User:default userId => $user->getId()">Registrovat</a>
+{/block}

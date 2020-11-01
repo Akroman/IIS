@@ -4,6 +4,8 @@
 namespace HotelSystem\Model\Entity;
 
 
+use Nette\Http\FileUpload;
+
 class Room extends BaseEntity
 {
     const ROOM_TYPE_STANDARD = 1;
@@ -17,6 +19,9 @@ class Room extends BaseEntity
 
     /** @var array */
     private $equipmentToInsert = [];
+
+    /** @var array */
+    private $imagesToInsert = [];
 
 
     /**
@@ -44,5 +49,28 @@ class Room extends BaseEntity
     public function getEquipmentToInsert(): array
     {
         return $this->equipmentToInsert;
+    }
+
+
+
+    public function addImage(string $imagePath): Room
+    {
+        $this->imagesToInsert[] = $imagePath;
+        return $this;
+    }
+
+
+
+    public function getImagesToInsert(): array
+    {
+        return $this->imagesToInsert;
+    }
+
+
+
+    public function getImages(): array
+    {
+        return $this->record->related(TABLE_ROOM_IMAGES, ROOM_ID)
+            ->fetchPairs(IMAGE_ROOM_ID, IMAGE_PATH);
     }
 }

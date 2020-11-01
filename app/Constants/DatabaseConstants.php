@@ -43,11 +43,13 @@ define('USER_PHONE',                          'user_phone');
 define('USER_LOGIN',                          'user_login');
 define('USER_PASSWORD',                       'user_password');
 define('USER_REGISTERED_DATE',                'user_registered_date');
-define('USER_ROLE',                           'user_role');
+
+define('TABLE_ROLES',                         'roles');
+define('ROLE_ID',                             'role_id');
+define('ROLE_NAME',                           'role_name');
 
 define('TABLE_USER_ROLES',                    'user_roles');
 define('USER_ROLE_ID',                        'user_role_id');
-define('USER_ROLE_NAME',                      'user_role_name');
 
 define('TABLE_EQUIPMENT',                     'equipment');
 define('EQUIPMENT_ID',                        'equipment_id');

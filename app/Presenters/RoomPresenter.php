@@ -4,9 +4,13 @@
 namespace App\Presenters;
 
 
-use HotelSystem\Model\Entity\Reservation;
 use HotelSystem\Model\Entity\Room;
 use Nette\Application\UI\Form;
+use Nette\Http\FileUpload;
+use Nette\Http\IResponse;
+use Nette\IOException;
+use Nette\Utils\FileSystem;
+use Nette\Utils\ImageException;
 
 class RoomPresenter extends BasePresenter
 {
@@ -15,10 +19,14 @@ class RoomPresenter extends BasePresenter
 
 
 
-    public function actionEdit($id = NULL)
+    public function actionEdit($roomId = NULL)
     {
-        $this->room = $this->roomRepository->getByID($id);
+        if (!$this->getUser()->isAllowed('room', 'edit')) {
+            $this->error('Na tuto akci nemáte dostatečná práva', IResponse::S403_FORBIDDEN);
+        }
+        $this->room = $this->roomRepository->getByID($roomId);
     }
+
 
 
     /**
@@ -29,7 +37,9 @@ class RoomPresenter extends BasePresenter
     {
         $form = new Form;
 
-        $form->addInteger(ROOM_CAPACITY, 'Počet lůžek');
+        $form->addInteger(ROOM_CAPACITY, 'Počet lůžek')
+            ->setRequired('Prosím vyplňte počet lůžek');
+
         $form->addText(ROOM_PRICE, 'Cena za noc')
             ->setRequired('Prosím vyplňte cenu za noc')
             ->addRule(Form::FLOAT, 'Prosím zadejte platné desetinné číslo');
@@ -41,8 +51,10 @@ class RoomPresenter extends BasePresenter
         $form->setDefaults($this->room->getData());
 
         $equipment = $this->roomRepository->getDatabase()->table(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
-        $form->addCheckboxList('equipment', 'Vybavení pokoje', $equipment)
+        $form->addCheckboxList(EQUIPMENT_ID, 'Vybavení pokoje', $equipment)
             ->setDefaultValue(array_keys($this->room->getEquipment()));
+
+        $form->addMultiUpload(IMAGE_ROOM_ID, 'Obrázky');
 
         $form->addSubmit('save', 'Uložit');
         $form->onSuccess[] = [$this, 'onRoomFormSuccess'];
@@ -55,57 +67,35 @@ class RoomPresenter extends BasePresenter
      * Callback pro uložení pokoje
      * @param Form $form
      */
-    public function onRoomFormSuccess(Form $form): void
+    protected function onRoomFormSuccess(Form $form): void
     {
         $values = $form->getValues(TRUE);
         $this->room->setEquipmentToInsert($values['equipment']);
-        unset($values['equipment']);
+        unset($values[EQUIPMENT_ID]);
 
         try {
+            $roomImagesPath = ROOM_IMAGES_FOLDER . $this->room->getId();
+            FileSystem::createDir($roomImagesPath);
+            /** @var $image FileUpload */
+            foreach ($values[IMAGE_ROOM_ID] as $image) {
+                $image->toImage();
+                $image->move($roomImagesPath);
+                $this->room->addImage($roomImagesPath . $image->getName());
+            }
+            unset($values[IMAGE_ROOM_ID]);
+
             $this->room->setData($values);
             $this->roomRepository->persist($this->room);
+
             $this->flashMessage('Pokoj úspěšně uložen');
             $this->redirect('this');
-        } catch (\PDOException $exception) {
-            \Tracy\Debugger::barDump($exception);
+        } catch (\PDOException $PDOException) {
+            \Tracy\Debugger::barDump($PDOException);
             $form->addError('Při ukládání došlo k chybě');
-        }
-    }
-
-
-
-    protected function createComponentReservationForm(): Form
-    {
-        $form = new Form;
-
-        $form->addDatePicker(RESERVATION_DATE_FROM, 'Datum od')
-            ->setRequired();
-        $form->addDatePicker(RESERVATION_DATE_TO, 'Datum do')
-            ->setRequired();
-
-        $form->addSubmit('save', 'Uložit rezervaci');
-        $form->onSuccess[] = [$this, 'onReservationFormSuccess'];
-
-        return $form;
-    }
-
-
-
-    public function onReservationFormSuccess(Form $form)
-    {
-        $values = $form->getValues(TRUE);
-        try {
-            /** @var $reservation Reservation */
-            $reservation = $this->reservationRepository->createEntity();
-            $reservation->setRoom($this->room)
-                ->setUser($this->loggedUser)
-                ->setDateFrom($values[RESERVATION_DATE_FROM])
-                ->setDateTo($values[RESERVATION_DATE_TO]);
-            $this->reservationRepository->persist($reservation);
-            $this->flashMessage('Rezervace úspěšně uložena', 'success');
-            $this->redirect('this');
-        } catch (\PDOException $exception) {
-            $form->addError('Při ukládání došlo k chybě');
+        } catch (ImageException $imageException) {
+            $form->addError('Prosím nahrávejte pouze obrázky');
+        } catch (IOException $IOException) {
+            $form->addError('Při nahrávání obrázků došlo k chybě');
         }
     }
 }
