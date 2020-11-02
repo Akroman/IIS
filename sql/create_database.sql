@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1:3306
--- Vytvořeno: Sob 31. říj 2020, 19:14
+-- Vytvořeno: Pon 02. lis 2020, 15:21
 -- Verze serveru: 5.7.31
 -- Verze PHP: 7.4.9
 
@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `reservation_id` int(11) NOT NULL AUTO_INCREMENT,
   `room_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `reservation_date_from` datetime NULL DEFAULT NULL,
-  `reservation_date_to` datetime NULL DEFAULT NULL,
+  `reservation_date_from` datetime NOT NULL,
+  `reservation_date_to` datetime NOT NULL,
   `reservation_confirmed` tinyint(4) NOT NULL,
   `reservation_check_in` tinyint(4) NOT NULL,
   `reservation_check_out` tinyint(4) NOT NULL,
@@ -75,6 +75,29 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   KEY `user_id_fk` (`user_id`),
   KEY `room_reservation_id_fk` (`room_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE IF NOT EXISTS `roles` (
+  `role_id` int(11) NOT NULL,
+  `role_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `roles`
+--
+
+INSERT INTO `roles` (`role_id`, `role_name`) VALUES
+(1, 'Customer'),
+(2, 'Receptionist'),
+(3, 'Owner'),
+(4, 'Admin');
 
 -- --------------------------------------------------------
 
@@ -119,10 +142,10 @@ DROP TABLE IF EXISTS `room_images`;
 CREATE TABLE IF NOT EXISTS `room_images` (
   `image_id` int(11) NOT NULL AUTO_INCREMENT,
   `image_room_id` int(11) NOT NULL,
-  `image_path` varchar(255) COLLATE utf8 NOT NULL,
+  `image_path` varchar(255) NOT NULL,
   PRIMARY KEY (`image_id`),
   KEY `image_room_id_fk` (`image_room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin2 COLLATE=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -140,8 +163,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_login` varchar(255) NOT NULL,
   `user_password` varchar(255) NOT NULL,
   `user_registered_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`user_id`),
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `users`
+--
+
+INSERT INTO `users` (`user_id`, `user_name`, `user_surname`, `user_email`, `user_phone`, `user_login`, `user_password`, `user_registered_date`) VALUES
+(7, 'admin', 'admin', 'mrda.me.fit@vutbr.cz', '798498614', 'admin', '$2y$10$PARlJtMUFdiCUPhe4WCj6.O8q/.iWUJIXyaaoHcFpL3t3SR2AgDBq', NULL);
 
 -- --------------------------------------------------------
 
@@ -149,12 +179,25 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Struktura tabulky `user_roles`
 --
 
-DROP TABLE IF EXISTS `roles`;
-CREATE TABLE IF NOT EXISTS `roles` (
+DROP TABLE IF EXISTS `user_roles`;
+CREATE TABLE IF NOT EXISTS `user_roles` (
+  `user_role_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
-  `role_name` varchar(255) NOT NULL,
-  PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`user_role_id`),
+  KEY `role_id_fk` (`role_id`),
+  KEY `user_role_id_fk` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `user_roles`
+--
+
+INSERT INTO `user_roles` (`user_role_id`, `user_id`, `role_id`) VALUES
+(7, 7, 1),
+(8, 7, 4),
+(9, 7, 3),
+(10, 7, 2);
 
 --
 -- Omezení pro exportované tabulky
@@ -192,20 +235,14 @@ ALTER TABLE `room_equipment`
 ALTER TABLE `room_images`
   ADD CONSTRAINT `image_room_id_fk` FOREIGN KEY (`image_room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+--
+-- Omezení pro tabulku `user_roles`
+--
+ALTER TABLE `user_roles`
+  ADD CONSTRAINT `role_id_fk` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `user_role_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
---
--- Vložení uživatelských oprávnění
---
-INSERT INTO `roles` (`role_id`, `role_name`) VALUES ('1', 'Customer'), ('2', 'Receptionist'), ('3', 'Owner'), ('4', 'Admin');
-
-DROP TABLE IF EXISTS `user_roles`;
-CREATE TABLE `user_roles` (
-    `user_role_id` INT NOT NULL AUTO_INCREMENT,
-    `user_id` INT NOT NULL,
-    `role_id` INT NOT NULL,
-    PRIMARY KEY (`user_role_id`)
-) ENGINE = InnoDB;

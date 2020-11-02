@@ -67,7 +67,7 @@ class UserFormFactory
         if ($this->isAdmin) {
             $roles = $this->userRepository->getDatabase()->table(TABLE_ROLES)->fetchPairs(ROLE_ID, ROLE_NAME);
             $form->addSelect(ROLE_ID, 'Oprávnění', $roles)
-                ->setDefaultValue(max(array_keys($this->user->getRoles())));
+                ->setDefaultValue($this->user->getHighestRole());
         }
 
         $form->addSubmit('send', $this->user->isNew() ? 'Zaregistrovat' : 'Uložit změny');
@@ -95,15 +95,12 @@ class UserFormFactory
         } else {
             unset($values[USER_PASSWORD]);
         }
-        $defaultRole = $this->userRepository->getDatabase()->table(TABLE_ROLES)
-            ->order(ROLE_ID)
-            ->fetch()[ROLE_ID];
 
         if ($this->isAdmin) {
             $this->user->setRolesToInsert($values[ROLE_ID]);
             unset($values[ROLE_ID]);
         } else {
-            $this->user->setRolesToInsert($defaultRole);
+            $this->user->setRolesToInsert($this->user->getHighestRole());
         }
 
         try {
@@ -117,7 +114,7 @@ class UserFormFactory
             $this->presenter->redirect('this');
         } catch (\PDOException $exception) {
             \Tracy\Debugger::barDump($exception);
-            if ($this->isAdmin) {
+            if (!$this->user->isNew()) {
                 $form->addError('Při editaci uživatele došlo k chybě');
             } else {
                 $form->addError('Při registraci došlo k chybě');

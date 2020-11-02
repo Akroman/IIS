@@ -40,8 +40,20 @@ class User extends BaseEntity
         $roleIds = $this->record->related(TABLE_USER_ROLES, USER_ID)->fetchPairs(USER_ROLE_ID, ROLE_ID);
         return $this->repository->getDatabase()->table(TABLE_ROLES)
             ->where(ROLE_ID, array_values($roleIds))
-            ->order(ROLE_ID, 'DESC')
+            ->order(ROLE_ID . ' DESC')
             ->fetchPairs(ROLE_ID, ROLE_NAME);
+    }
+
+
+
+    public function getHighestRole(): int
+    {
+        if ($this->isNew()) {
+            return $this->repository->getDatabase()->table(TABLE_ROLES)
+                ->order(ROLE_ID)
+                ->fetch()[ROLE_ID];
+        }
+        return max(array_keys($this->getRoles()));
     }
 
 
