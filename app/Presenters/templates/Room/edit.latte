@@ -1,0 +1,18 @@
+{layout '../@dashboard.latte'}
+
+{block content}
+<p style="margin-top:15px;"></p>
+<div style="margin-left:100px;margin-right:100px;padding-bottom:30px;padding-top:15px;">
+    <center>
+        <div class="col-lg-8 col-md-8 text-center" style="font-size: 30px;padding-bottom: 5px;padding-top:10px;">
+            <div class="alert alert-primary" role="alert">
+                Přidání pokoje
+            </div>
+        </div>
+        {control roomForm}
+    </center>
+</div>
+{/block}
+{block scripts}
+<script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+{/block}

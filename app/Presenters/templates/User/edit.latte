@@ -1,4 +1,13 @@
-{layout '../@layout.latte'}
+{layout '@layout.latte'}
+{block odkaz}
+<li class="nav-item"><a n:href="User:login" class="nav-link" style="font-family: 'Roboto', sans-serif; font-size: 17px;color:rgba(255, 255, 255, 0.95);padding-left:15px;padding-right:15px;padding-bottom:15px;padding-top:15px;" >Přihlásit se</a> </li>
+{/block}
+{block jmeno}
+Registrace
+{/block}
 {block content}
+<div class="alert alert-warning" role="alert">
+    Položky označené (<span style="color:red;">*</span>) jsou povinné.
+</div>
     {control registerForm}
 {/block}

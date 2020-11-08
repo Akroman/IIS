@@ -73,14 +73,28 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
         $form = new Form;
 
         $form->addText(USER_LOGIN, 'Login')
-            ->setRequired('Prosím vyplňte login');
+            ->setRequired('Prosím vyplňte login')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('placeholder', 'Login ...')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
         $form->addPassword(USER_PASSWORD, 'Heslo')
-            ->setRequired('Prosím vyplňte heslo');
+            ->setRequired('Prosím vyplňte heslo')
+            ->setHtmlAttribute('placeholder', 'Heslo ...')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
+            ->setHtmlAttribute(' size', '50');
 
-        $form->addCheckbox('permanently', 'Zapamatovat');
+        $form->addCheckbox('permanently', ' Zapamatovat')
+            ->setHtmlAttribute(' class', 'zapamatovat')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addSubmit('signin', 'Přihlásit');
+
+
+        $form->addSubmit('signin', 'Přihlásit')
+            ->setHtmlAttribute('class', 'btn btn-dark btn-lg btn-block')
+            ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(TRUE);
             try {
@@ -91,10 +105,11 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
                 } else {
                     $this->getUser()->setExpiration('+60 minutes', IUserStorage::CLEAR_IDENTITY);
                 }
-                $this->redirect('this');
+                $this->redirect('Homepage:dashboard');
             } catch (AuthenticationException $exception) {
                 $form->addError($exception->getMessage());
             }
+
         };
         return $form;
     }
@@ -108,12 +123,14 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
     {
         $form = new Form;
 
-        $form->addSubmit('logout', 'Odhlásit');
+        $form->addSubmit('logout', 'Odhlásit se')
+            ->setHtmlAttribute('class', 'btn btn-danger')
+            ->setHtmlAttribute('style', 'margin-left:5px;');
         $form->onSuccess[] = function (Form $form) {
             if ($this->getUser()->isLoggedIn()) {
                 $this->getUser()->logout(TRUE);
             }
-            $this->redirect('this');
+            $this->redirect('Homepage:welcome');
         };
         return $form;
     }

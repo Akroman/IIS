@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="description" content="Kataraz - system pro spravu pokoju">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="system, hotel, pokoje">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="googlebot" content="index, follow"/>
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Pavel,Matej,Tomas">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="{{ URL::asset('images/favicon16x16.png') }}" type="image/png" sizes="16x16"/>
+    <link rel="icon" href="{{ URL::asset('images/favicon32x32.png') }}" type="image/png" sizes="32x32"/>
+    <link rel="icon" href="{{ URL::asset('images/favicon96x96.png') }}" type="image/png" sizes="96x96"/>
+
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <title>Kataraz</title>
+    <style>
+
+
+    .card-body{
+        border-style:solid;
+        border-width: thin;
+        padding-bottom: 55px;
+
+    }
+
+    label{
+        font-style: normal;
+        font-family: Roboto;
+        padding-right: 12px;
+    }
+
+    .zapamatovat{
+    }
+
+    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+
+
+</head>
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="20">
+<!-- Menu-->
+<nav class="fill navbar sticky-top navbar-light navbar-expand-sm " style="background:rgba(0,0,0,0.85);" id="myScrollspy">
+    <!-- Sekce logo -->
+    <a class="navbar-brand" href="/" style="font-size: 22px;margin-left: 20px;color:rgba(255, 255, 255, 0.95);">  Kataraz</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#dropdownMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="dropdownMenu">
+        <ul class="navbar-nav navbar-collapse justify-content-end">
+            {include odkaz}
+        </ul>
+    </div>
+</nav>
+<br><br>
+<div class="container" >
+    <div class="row justify-content-center" >
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header text-center" style="color:rgba(255, 255, 255, 0.95);background:rgba(0,0,0,0.85);font-size: 24px;">
+                    {include jmeno}
+
+                </div>
+
+                <div class="card-body" style="background:rgba(0,0,0,0.1);">
+
+                    <center>
+                        {include content}
+                    </center>
+
+                    {block scripts}
+                    <script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+                    {/block}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

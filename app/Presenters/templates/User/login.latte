@@ -1,0 +1,16 @@
+{layout '@layout.latte'}
+
+{block odkaz}
+<li class="nav-item"><a n:href="User:edit userId => $user->getId()" class="nav-link" style="font-family: 'Roboto', sans-serif; font-size: 17px;color:rgba(255, 255, 255, 0.95);padding-left:15px;padding-right:15px;padding-bottom:15px;padding-top:15px;" >Registrovat se</a> </li>
+{/block}
+    {block jmeno}
+    Přihlašování
+    {/block}
+    {block content}
+    {control loginForm}
+
+    {/block}
+{block scripts}
+<script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+{/block}
+

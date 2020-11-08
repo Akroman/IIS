@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta name="description" content="Kataraz - systém pro správu hotelových pokojů">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="system, hotely, pokoje">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="googlebot" content="index, follow"/>
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Pavel,Matej,Tomas">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="/favicon32x32.png" type="image/png" sizes="32x32"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <title>Kataraz</title>
+
+    <style>
+        [class*="col-"],[class^="col-"] { padding-left: 0; padding-right: 0; }
+        body { font-family: 'Roboto', sans-serif; }
+        .navbar-brand{ font-family: 'Pacifico', cursive; }
+        nav { width: 100%; box-shadow: 0px 6px 0px #dedede;}
+        html {
+            scroll-behavior: smooth
+        }
+        nav ul li a { text-decoration: none; font-weight: 800; text-transform: uppercase; }
+        nav.fill ul li a { position: relative; }
+
+        nav.fill ul li a:after { position: absolute; bottom: 0; left: 0; right: 0; margin: auto;
+            width: 0%; content: '.'; color: transparent; height: 1px; }
+
+        nav.fill ul li a:hover { z-index: 1; }
+
+        nav.fill ul li a:hover:after { z-index: -10; animation: fill 1s forwards;
+            -webkit-animation: fill 1s forwards; -moz-animation: fill 1s forwards; opacity: 1; }
+    </style>
+
+</head>
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="20">
+<!-- Menu-->
+<nav class="fill navbar sticky-top navbar-light navbar-expand-sm " style="background-color: #F5F5F5" id="myScrollspy">
+    <!-- Sekce logo -->
+    <a class="navbar-brand" href="/" style="font-size: 25px;margin-left: 20px;"> Kataraz</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#dropdownMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="dropdownMenu">
+        <ul class="navbar-nav navbar-collapse">
+            <li class="nav-item"><a href="#funkce" class="nav-link p-3" style="font-family: 'Roboto', sans-serif; font-size: 16px;" >Informace</a> </li>
+            <li class="nav-item"><a href="#vlastnosti" class="nav-link p-3" style="font-family: 'Roboto', sans-serif; font-size: 16px;" >Pokoje</a> </li>
+            <li class="nav-item"><a href="#kontakty" class="nav-link p-3" style="font-family: 'Roboto', sans-serif; font-size: 16px;" >Kontakty</a> </li>
+        </ul>
+        <ul class="navbar-nav navbar-collapse justify-content-end">
+            <li class="nav-item"><a n:href="User:login" class="nav-link" style="font-family: 'Roboto', sans-serif; font-size: 16px;padding-left:15px;padding-right:15px;padding-bottom:15px;padding-top:15px;" >Přihlásit se</a> </li>
+            <li class="nav-item"> <a n:href="User:edit userId => $user->getId()" class="nav-link" style="font-family: 'Roboto', sans-serif; font-size: 16px;margin-right: 20px;padding-left:15px;padding-right:15px;padding-bottom:15px;padding-top:15px;" >Registrace</a> </li>
+        </ul>
+    </div>
+</nav>
+
+
+<section class="page-section"  id="funkce" style="padding-top:40px;padding-bottom: 60px;background:rgba(0,0,0,0.85);" >
+    <div class="container">
+        <h2 class="text-center text-white">Informace</h2>
+        <hr style="background-color: white;padding-top:2px;">
+        <div class="row">
+            <div class="col-lg-1 col-md-1 text-center">
+            </div>
+            <div class="col-lg-10 col-md-10 text-center">
+               <p class="text-white">V nabídce(viz. níže) lze obsazovat pokoje.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Vlastnosti systému-->
+<section class="page-section"  id="vlastnosti" style="padding-top:40px;padding-bottom: 60px;background-color: #F5F5F5" >
+    <div class="container">
+        <h2 class="text-center">Pokoje</h2>
+        <hr style="background-color: #FF7F50;padding-top:2px;">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <h3 class="h4 mb-2">Pokoj číslo 1</h3>
+                    <p class="text-muted mb-0 text-center">Random text</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <h3 class="h4 mb-2">Pokoj číslo 2</h3>
+                    <p class="text-muted mb-0">Random text</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <h3 class="h4 mb-2">Pokoj číslo 3</h3>
+                    <p class="text-muted mb-0">Random text</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <h3 class="h4 mb-2">Pokoj číslo 4</h3>
+                    <p class="text-muted mb-0">Random text</p>
+                </div>
+            </div>
+
+            <div class="col-lg-12 col-md-6 text-center">
+                <div class="mt-5">
+                    <h3 class="h4 mb-2">Pokoj číslo 5</h3>
+                    <p class="text-muted mb-0">Random text</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Kontakty-->
+<section class="page-section" id="kontakty" style="background-color: #F5F5F5;color:black;padding-top:60px;padding-bottom:30px;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 >Kontakty</h2>
+                <hr style="background-color: #FF7F50;padding-top:2px;">
+
+                <p class="text-black" style="font-size: 20px;margin-top:10px;">Pavel Sklenář</p>
+                <p class="text-black" style="font-size: 20px;margin-top:10px;">Matěj Hlávka</p>
+                <p class="text-black" style="font-size: 20px;margin-top:10px;">Tomáš Křenek</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 ml-auto text-center mb-5 mb-lg-0">
+                <i class="fa fa-phone fa-3x"></i>
+                <div class="">+420 123 456 789
+                </div>
+            </div>
+            <div class="col-lg-4 mr-auto text-center">
+                <i class="fa fa-envelope fa-3x"></i>
+                <a class="d-block " href="mailto:sklenar@aksklenar.com">hotel@gmail.com</a>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <center><p class="">Informační systém pro hotelnictví 2020.</p><br></center>
+</section>
+
+<!-- Patička-->
+<footer class="bg-light ">
+    <div class="container"><br>
+        <center><div class="small text-center text-muted">Copyright&copy 2020</div></center>
+    </div>
+    <br>
+</footer>
+
+</body>
+</html>

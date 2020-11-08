@@ -32,11 +32,19 @@ class ReservationPresenter extends BasePresenter
         $form = new Form;
 
         $form->addDatePicker(RESERVATION_DATE_FROM, 'Datum od')
-            ->setRequired();
-        $form->addDatePicker(RESERVATION_DATE_TO, 'Datum do')
-            ->setRequired();
+            ->setRequired()
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addSubmit('save', 'Uložit rezervaci');
+        $form->addDatePicker(RESERVATION_DATE_TO, 'Datum do')
+            ->setRequired()
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
+        $form->addSubmit('save', 'Uložit rezervaci')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block');
+
         $form->onSuccess[] = [$this, 'onReservationFormSuccess'];
 
         return $form;

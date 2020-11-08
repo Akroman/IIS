@@ -44,22 +44,41 @@ class UserFormFactory
     {
         $form = new Form;
 
-        $form->addText(USER_NAME, 'Jméno')
-            ->setRequired('Prosím vyplňte jméno');
+        $form->addText(USER_NAME, 'Jméno (*)')
+            ->setRequired('Prosím vyplňte jméno')
+            ->setHtmlAttribute('placeholder', 'Zadejte své jméno ...')
+            ->setHtmlAttribute(' size', '70')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addText(USER_SURNAME, 'Příjmení')
-            ->setRequired('Prosím vyplňte příjmení');
+        $form->addText(USER_SURNAME, 'Příjmení (*)')
+            ->setRequired('Prosím vyplňte příjmení')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
+            ->setHtmlAttribute('placeholder', 'Zadejte své příjmení ...');
 
         $form->addText(USER_PHONE, 'Telefon')
-            ->setRequired('Prosím vyplňte telefon');
+            ->setRequired('Prosím vyplňte telefon')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
+            ->setHtmlAttribute('placeholder', 'Zadejte svoje telefonní číslo ...');
 
-        $form->addText(USER_EMAIL, 'Email')
-            ->setRequired('Prosím vyplňte email');
+        $form->addText(USER_EMAIL, 'Email (*)')
+            ->setRequired('Prosím vyplňte email')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
+            ->setHtmlAttribute('placeholder', 'Zadejte váš email ...');
 
-        $form->addText(USER_LOGIN, 'Login')
-            ->setRequired('Prosím vyplňte login');
+        $form->addText(USER_LOGIN, 'Login (*)')
+            ->setRequired('Prosím vyplňte login')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
+            ->setHtmlAttribute('placeholder', 'Zadejte váš login ...');
 
-        $password = $form->addPassword(USER_PASSWORD, 'Heslo');
+        $password = $form->addPassword(USER_PASSWORD, 'Heslo (*)')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:30px;margin-left:15px;')
+             ->setHtmlAttribute('placeholder', 'Zadejte své heslo ...');
         if ($this->user->isNew()) {
             $password->setRequired('Prosím zvolte si heslo');
         }
@@ -67,10 +86,15 @@ class UserFormFactory
         if ($this->isAdmin) {
             $roles = $this->userRepository->getDatabase()->table(TABLE_ROLES)->fetchPairs(ROLE_ID, ROLE_NAME);
             $form->addSelect(ROLE_ID, 'Oprávnění', $roles)
-                ->setDefaultValue($this->user->getHighestRole());
+                ->setDefaultValue($this->user->getHighestRole())
+                ->setHtmlAttribute('placeholder', 'Zadejte své oprávnění ...')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('style', 'margin-bottom:30px;margin-left:15px;');
         }
 
-        $form->addSubmit('send', $this->user->isNew() ? 'Zaregistrovat' : 'Uložit změny');
+        $form->addSubmit('send', $this->user->isNew() ? 'Zaregistrovat se' : 'Uložit změny')
+            ->setHtmlAttribute('class', 'btn btn-dark btn-lg btn-block')
+            ->setHtmlAttribute('style', 'margin-left:15px;');
 
         $defaults = $this->user->getData();
         unset($defaults[USER_PASSWORD]);
