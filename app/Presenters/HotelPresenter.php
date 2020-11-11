@@ -91,7 +91,9 @@ class HotelPresenter extends BasePresenter
             ->setHtmlAttribute('style', 'margin-bottom:15px;')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addMultiUpload(IMAGE_HOTEL_ID, 'Obrázky');
+        $form->addMultiUpload(IMAGE_HOTEL_ID, 'Obrázky')
+            ->setHtmlAttribute('class', 'btn btn-danger')
+            ->setHtmlAttribute('style', 'margin-left:15px;margin-bottom:15px;');
 
         $form->addSubmit('save', 'Přidat hotel')
             ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')

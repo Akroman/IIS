@@ -36,13 +36,14 @@ class RoomPresenter extends BasePresenter
 
     protected function createComponentRoomDataTable()
     {
+        $equipment = $this->roomRepository->getDatabase()->table(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
+
+        for ($i=1;$i<sizeof($equipment)+1;$i++){
+            $equipment[$i] = '  '.$equipment[$i];
+        }
+
         $filters = [
             [
-                'type' => DataTable::CHECKBOX_LIST_FILTER,
-                'name' => ROOM_EQUIPMENT_ID,
-                'label' => 'Vybavení pokoje',
-                'items' => $this->roomRepository->getTable(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME)
-            ], [
                 'type' => DataTable::SELECT_BOX_FILTER,
                 'name' => ROOM_TYPE,
                 'label' => 'Typ pokoje',
@@ -55,7 +56,12 @@ class RoomPresenter extends BasePresenter
                 'type' => DataTable::TEXT_INPUT_FILTER,
                 'name' => HOTEL_CITY,
                 'label' => 'Město'
-            ]
+            ], [
+            'type' => DataTable::CHECKBOX_LIST_FILTER,
+            'name' => ROOM_EQUIPMENT_ID,
+            'label' => 'Vybavení pokoje',
+            'items' => $equipment
+        ]
         ];
         return new DataTable($this->roomRepository, $filters);
     }
@@ -78,32 +84,55 @@ class RoomPresenter extends BasePresenter
                 ->fetchPairs(HOTEL_ID, HOTEL_NAME);
         }
 
-        $hotel = $form->addSelect(ROOM_HOTEL_ID, 'Hotel', $hotels);
+        $hotel = $form->addSelect(ROOM_HOTEL_ID, 'Hotel', $hotels)
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('placeholder', 'Počet lůžek ...')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
         if ($this->hotelId) {
             $hotel->setDefaultValue($this->hotelId);
         }
 
         $form->addInteger(ROOM_CAPACITY, 'Počet lůžek')
-            ->setRequired('Prosím vyplňte počet lůžek');
+            ->setRequired('Prosím vyplňte počet lůžek')
+            ->setDefaultValue(1)
+            ->setHtmlAttribute('class', 'form-control form-control-lg text-center')
+            ->setHtmlAttribute('placeholder', 'Počet lůžek ...')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
         $form->addText(ROOM_PRICE, 'Cena za noc')
             ->setRequired('Prosím vyplňte cenu za noc')
-            ->addRule(Form::FLOAT, 'Prosím zadejte platné desetinné číslo');
+            ->addRule(Form::FLOAT, 'Prosím zadejte platné desetinné číslo')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('placeholder', 'Zadejte cenu ...')
+            ->setHtmlAttribute(' size', '70')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
         $form->addSelect(ROOM_TYPE, 'Typ pokoje', Room::ROOM_TYPES)
             ->setPrompt('- Typ -')
-            ->setRequired('Prosím zvolte typ pokoje');
+            ->setRequired('Prosím zvolte typ pokoje')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
         $form->setDefaults($this->room->getData());
 
         $equipment = $this->roomRepository->getDatabase()->table(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
+
+        for ($i=1;$i<sizeof($equipment)+1;$i++){
+            $equipment[$i] = '  '.$equipment[$i];
+        }
+
         $form->addCheckboxList(EQUIPMENT_ID, 'Vybavení pokoje', $equipment)
-            ->setDefaultValue(array_keys($this->room->getEquipment()));
+            ->setDefaultValue(array_keys($this->room->getEquipment()))
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addMultiUpload(IMAGE_ROOM_ID, 'Obrázky');
+        $form->addMultiUpload(IMAGE_ROOM_ID, 'Obrázky')
+            ->setHtmlAttribute('class', 'btn btn-danger')
+            ->setHtmlAttribute('style', 'margin-left:15px;margin-bottom:15px;');
 
-        $form->addSubmit('save', 'Uložit');
+        $form->addSubmit('save', 'Přidat pokoj')
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
+            ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = [$this, 'onRoomFormSuccess'];
 
         return $form;

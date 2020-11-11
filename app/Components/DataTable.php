@@ -74,27 +74,39 @@ class DataTable extends Control
         foreach ($this->filters as $filterProperties) {
             switch ($filterProperties['type']) {
                 case self::CHECKBOX_LIST_FILTER:
-                    $form->addCheckboxList($filterProperties['name'], $filterProperties['label'], $filterProperties['items']);
+                    $form->addCheckboxList($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
+                        ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::SELECT_BOX_FILTER:
                     $form->addSelect($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
-                        ->setPrompt('- Vše -');
+                        ->setPrompt('- Vše -')
+                        ->setHtmlAttribute('class', 'form-control form-control-lg')
+                        ->setHtmlAttribute('placeholder', 'Název hotelu...')
+                        ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::TEXT_INPUT_FILTER:
-                    $form->addText($filterProperties['name'], $filterProperties['label']);
+                    $form->addText($filterProperties['name'], $filterProperties['label'])
+                        ->setHtmlAttribute('class', 'form-control form-control-lg')
+                        ->setHtmlAttribute('placeholder', 'Název hotelu...')
+                        ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::RANGE_FILTER:
                     // TODO
                     break;
                 case self::INTEGER_INPUT_FILTER:
-                    $form->addInteger($filterProperties['name'], $filterProperties['label']);
+                    $form->addInteger($filterProperties['name'], $filterProperties['label'])
+                        ->setHtmlAttribute('class', 'form-control form-control-lg')
+                        ->setHtmlAttribute('placeholder', 'Název hotelu...')
+                        ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 default:
                     throw new InvalidArgumentException('Unknown filter type');
             }
         }
 
-        $form->addSubmit('send', 'Filtrovat');
+        $form->addSubmit('send', 'Filtrovat')
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
+            ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(TRUE);
             $this->template->results = $this->getResultsArray(array_filter($values));
