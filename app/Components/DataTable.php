@@ -91,22 +91,20 @@ class DataTable extends Control
                     $form->addSelect($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
                         ->setPrompt('- Vše -')
                         ->setHtmlAttribute('class', 'form-control form-control-lg')
-                        ->setHtmlAttribute('placeholder', 'Název hotelu...')
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::TEXT_INPUT_FILTER:
                     $form->addText($filterProperties['name'], $filterProperties['label'])
                         ->setHtmlAttribute('class', 'form-control form-control-lg')
-                        ->setHtmlAttribute('placeholder', 'Název hotelu...')
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::RANGE_FILTER:
-                    // TODO
+                    $form->addText($filterProperties['name'] . '1', $filterProperties['label'] . ' od');
+                    $form->addText($filterProperties['name'] . '2', $filterProperties['label'] . ' do');
                     break;
                 case self::INTEGER_INPUT_FILTER:
                     $form->addInteger($filterProperties['name'], $filterProperties['label'])
                         ->setHtmlAttribute('class', 'form-control form-control-lg')
-                        ->setHtmlAttribute('placeholder', 'Název hotelu...')
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 default:

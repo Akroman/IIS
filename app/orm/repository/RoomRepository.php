@@ -8,6 +8,7 @@ use HotelSystem\Model\Entity\Room;
 use HotelSystem\Utils\DatabaseUtils;
 use Nette\Database\Context as NdbContext;
 use Nette\InvalidArgumentException;
+use Nette\Utils\Image;
 use YetORM\Entity;
 
 class RoomRepository extends DataTableRepository
@@ -84,9 +85,11 @@ class RoomRepository extends DataTableRepository
             array_map(function (Room $room) { return $room->getId(); }, $this->dataCollection),
             array_map(function (Room $room) {
                 return [
-                    'title' => 'Pokoj ' . $room->getCapacity(),
+                    'title' => 'Pokoj ' . $room->getCapacity() . ' lůžkový',
                     'description' => implode(', ', $room->getEquipment()),
-                    'images' => array_slice($room->getImages(), 0, self::$imagesCount)
+                    'images' => array_map(function (string $imagePath) {
+                        return Image::fromFile($imagePath);
+                    }, array_slice($room->getImages(), 0, self::$imagesCount))
                 ];
             }, $this->dataCollection)
         );
@@ -101,8 +104,11 @@ class RoomRepository extends DataTableRepository
     {
         foreach ($filters as $filterType => $filterValue) {
             switch ($filterType) {
-                case ROOM_PRICE:
-                    $this->baseSelection->where(ROOM_PRICE . ' BETWEEN ? AND ?', $filterValue);
+                case ROOM_PRICE . '1':
+                    $this->baseSelection->where(ROOM_PRICE . ' > ?', $filterValue);
+                    break;
+                case ROOM_PRICE . '2':
+                    $this->baseSelection->where(ROOM_PRICE . ' < ?', $filterValue);
                     break;
                 case ROOM_CAPACITY:
                     $this->baseSelection->where(ROOM_CAPACITY, $filterValue);

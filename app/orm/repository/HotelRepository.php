@@ -8,6 +8,7 @@ use HotelSystem\Model\Entity\Hotel;
 use HotelSystem\Utils\DatabaseUtils;
 use Nette\Database\Context as NdbContext;
 use Nette\InvalidArgumentException;
+use Nette\Utils\Image;
 use YetORM\Entity;
 
 class HotelRepository extends DataTableRepository
@@ -60,7 +61,9 @@ class HotelRepository extends DataTableRepository
                 return [
                     'title' => $hotel->getName(),
                     'description' => $hotel->getDescription(),
-                    'images' => array_slice($hotel->getImages(), 0, self::$imagesCount)
+                    'images' => array_map(function (string $imagePath) {
+                        return Image::fromFile($imagePath);
+                    }, array_slice($hotel->getImages(), 0, self::$imagesCount))
                 ];
             }, $this->dataCollection)
         );

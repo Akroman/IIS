@@ -41,8 +41,8 @@ class RoomPresenter extends BasePresenter
     {
         $equipment = $this->roomRepository->getDatabase()->table(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
 
-        for ($i=1;$i<sizeof($equipment)+1;$i++){
-            $equipment[$i] = '  '.$equipment[$i];
+        foreach ($equipment as $key => $equip) {
+            $equipment[$key] = '  ' . $equip;
         }
 
         $filters = [
@@ -60,11 +60,15 @@ class RoomPresenter extends BasePresenter
                 'name' => HOTEL_CITY,
                 'label' => 'Město'
             ], [
-            'type' => DataTable::CHECKBOX_LIST_FILTER,
-            'name' => ROOM_EQUIPMENT_ID,
-            'label' => 'Vybavení pokoje',
-            'items' => $equipment
-        ]
+                'type' => DataTable::CHECKBOX_LIST_FILTER,
+                'name' => ROOM_EQUIPMENT_ID,
+                'label' => 'Vybavení pokoje',
+                'items' => $equipment
+            ], [
+                'type' => DataTable::RANGE_FILTER,
+                'name' => ROOM_PRICE,
+                'label' => 'Cena'
+            ]
         ];
         return new DataTable($this->roomRepository, $filters);
     }
