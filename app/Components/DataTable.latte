@@ -2,7 +2,9 @@
  * Komponenta pro stránkování, může být klidně umístěna i pod tabulkou
  * ve VisualPaginator.latte lze změnit její vzhled
  *}
-{control visualPaginator}
+{snippet paginator}
+    {control visualPaginator}
+{/snippet}
 
 {snippet table}
     {foreach $results as $resultId => $result}

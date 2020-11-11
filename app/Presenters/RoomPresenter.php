@@ -33,8 +33,11 @@ class RoomPresenter extends BasePresenter
     }
 
 
-
-    protected function createComponentRoomDataTable()
+    /**
+     * Komponenta pro přehled pokojů
+     * @return DataTable
+     */
+    protected function createComponentRoomDataTable(): DataTable
     {
         $filters = [
             [
@@ -134,8 +137,9 @@ class RoomPresenter extends BasePresenter
             /** @var $image FileUpload */
             foreach ($images as $image) {
                 $image->toImage();
-                $image->move($roomImagesPath);
-                $this->room->addImage($roomImagesPath . '/' . $image->getName());
+                $imagePath = $roomImagesPath . '/' . $image->getName();
+                $image->move($imagePath);
+                $this->room->addImage($imagePath);
             }
             $this->roomRepository->persist($this->room);
         } catch (\PDOException $PDOException) {

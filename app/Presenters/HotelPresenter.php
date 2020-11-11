@@ -29,8 +29,11 @@ class HotelPresenter extends BasePresenter
     }
 
 
-
-    protected function createComponentHotelDataTable()
+    /**
+     * Komponenta pro přehled hotelů
+     * @return DataTable
+     */
+    protected function createComponentHotelDataTable(): DataTable
     {
         $filters = [
             [
@@ -47,7 +50,10 @@ class HotelPresenter extends BasePresenter
     }
 
 
-
+    /**
+     * Formulář pro tvorbu hotelů
+     * @return Form
+     */
     protected function createComponentHotelForm(): Form
     {
         $form = new Form;
@@ -105,8 +111,11 @@ class HotelPresenter extends BasePresenter
     }
 
 
-
-    public function onHotelFormSuccess(Form $form)
+    /**
+     * Callback pro uložení hotelu
+     * @param Form $form
+     */
+    public function onHotelFormSuccess(Form $form): void
     {
         $values = $form->getValues(TRUE);
         try {
@@ -124,8 +133,9 @@ class HotelPresenter extends BasePresenter
             /** @var $image FileUpload */
             foreach ($images as $image) {
                 $image->toImage();
-                $image->move($hotelImagesPath);
-                $this->hotel->addImage($hotelImagesPath . '/' . $image->getName());
+                $imagePath = $hotelImagesPath . '/' . $image->getName();
+                $image->move($imagePath);
+                $this->hotel->addImage($imagePath);
             }
             $this->hotelRepository->persist($this->hotel);
             $this->flashMessage('Hotel úspěšně uložen', 'success');

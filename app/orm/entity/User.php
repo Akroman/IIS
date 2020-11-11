@@ -21,21 +21,27 @@ class User extends BaseEntity
     }
 
 
-
+    /**
+     * @return string
+     */
     public function getLogin(): string
     {
         return $this->get(USER_LOGIN);
     }
 
 
-
+    /**
+     * @return string
+     */
     public function getPassword(): string
     {
         return $this->get(USER_PASSWORD);
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getRoles(): array
     {
         $roleIds = $this->record->related(TABLE_USER_ROLES, USER_ID)->fetchPairs(USER_ROLE_ID, ROLE_ID);
@@ -46,7 +52,9 @@ class User extends BaseEntity
     }
 
 
-
+    /**
+     * @return int
+     */
     public function getHighestRole(): int
     {
         if ($this->isNew()) {
@@ -58,7 +66,11 @@ class User extends BaseEntity
     }
 
 
-
+    /**
+     * Vloží do databáze zvolenou roli uživatele společně i s nižšími rolemi, než je role zvolená
+     * @param int $role
+     * @return $this
+     */
     public function setRolesToInsert(int $role): User
     {
         for ($roleId = 1; $roleId <= $role; $roleId++) {
@@ -68,7 +80,9 @@ class User extends BaseEntity
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getRolesToInsert(): array
     {
         return $this->rolesToInsert;

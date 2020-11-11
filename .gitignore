@@ -6,3 +6,4 @@ composer.lock
 /log/
 /temp/
 /vendor/
+/data

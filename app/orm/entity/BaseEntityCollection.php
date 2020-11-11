@@ -9,11 +9,7 @@ use Nette\Database\Table\Selection;
 
 class BaseEntityCollection extends \YetORM\EntityCollection
 {
-    public function __construct(Selection $selection, string $entity, BaseRepository $repo = NULL, ?string $refTable = NULL, ?string $refColumn = NULL) {
-        if ($repo === NULL) {
-            throw new Nette\InvalidArgumentException('Repo not set');
-        }
-
+    public function __construct(Selection $selection, string $entity, BaseRepository $repo, ?string $refTable = NULL, ?string $refColumn = NULL) {
         parent::__construct($selection, function($row) use ($entity, $repo) {
             return new $entity($repo, $row);
         }, $refTable, $refColumn);

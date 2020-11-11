@@ -80,7 +80,9 @@ abstract class BaseEntity extends \YetORM\Entity
     }
 
 
-
+    /**
+     * @return bool
+     */
     public function isNew(): bool
     {
         return !(bool) $this->getId();

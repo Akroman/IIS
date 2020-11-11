@@ -42,7 +42,11 @@ abstract class BaseRepository extends \YetORM\Repository
     }
 
 
-
+    /**
+     * Override pro zpřístupnění metody mimo třídu
+     * @param null $table
+     * @return \Nette\Database\Table\Selection
+     */
     public function getTable($table = NULL)
     {
         return parent::getTable($table);

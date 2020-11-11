@@ -37,8 +37,12 @@ class DataTable extends Control
     }
 
 
-
-    private function getResultsArray(array $filtersToApply = [])
+    /**
+     * Vrátí pole výsledků pro vyrenderování
+     * @param array $filtersToApply
+     * @return array
+     */
+    private function getResultsArray(array $filtersToApply = []): array
     {
         $paginator = $this['visualPaginator']->getPaginator();
         return $this->repository->applyDataTableFilters($filtersToApply)
@@ -55,8 +59,11 @@ class DataTable extends Control
     }
 
 
-
-    public function createComponentVisualPaginator()
+    /**
+     * Komponenta pro stránkování
+     * @return VisualPaginator
+     */
+    public function createComponentVisualPaginator(): VisualPaginator
     {
         $visualPaginator = new VisualPaginator;
         $paginator = $visualPaginator->getPaginator();
@@ -66,8 +73,11 @@ class DataTable extends Control
     }
 
 
-
-    public function createComponentFilters()
+    /**
+     * Komponenta s filtry, při submitu překreslí tabulku
+     * @return Form
+     */
+    public function createComponentFilters(): Form
     {
         $form = new Form;
 
@@ -97,8 +107,11 @@ class DataTable extends Control
         $form->addSubmit('send', 'Filtrovat');
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(TRUE);
-            $this->template->results = $this->getResultsArray(array_filter($values));
-            $this->redrawControl('table');
+            $results = $this->getResultsArray(array_filter($values));
+
+            $this['visualPaginator']->getPaginator()->setItemCount(count($results));
+            $this->template->results = $results;
+            $this->redrawControl();
         };
 
         return $form;

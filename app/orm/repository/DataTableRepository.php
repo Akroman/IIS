@@ -16,7 +16,7 @@ use Nette\InvalidStateException;
  */
 abstract class DataTableRepository extends BaseRepository
 {
-    /** @var array of Hotel entities */
+    /** @var array */
     protected $dataCollection;
 
     /** @var int */

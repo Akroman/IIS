@@ -31,6 +31,9 @@ class RoomRepository extends DataTableRepository
         $this->transaction(function () use ($entity) {
             parent::persist($entity);
 
+            /**
+             * Nejdříve se odstrání vybavení, které bylo v databázi a uživatel je odškrtl pryč
+             */
             foreach ($entity->getEquipment() as $equipmentId => $equipmentName) {
                 if (!in_array($equipmentId, $entity->getEquipmentToInsert())) {
                     $this->getTable()
@@ -40,6 +43,9 @@ class RoomRepository extends DataTableRepository
                 }
             }
 
+            /**
+             * Potom se vloží do databáze vybavení a obrázky
+             */
             foreach ($entity->getEquipmentToInsert() as $equipmentId) {
                 DatabaseUtils::insertOrUpdate($this->database, TABLE_ROOM_EQUIPMENT, [
                     ROOM_ID => $entity->getId(),
@@ -52,10 +58,10 @@ class RoomRepository extends DataTableRepository
 
             foreach ($entity->getImagesToInsert() as $imagePath) {
                 DatabaseUtils::insertOrUpdate($this->database, TABLE_ROOM_IMAGES, [
-                    ROOM_ID => $entity->getId(),
+                    IMAGE_ROOM_ID => $entity->getId(),
                     IMAGE_PATH => $imagePath
                 ], [
-                    ROOM_ID => $entity->getId(),
+                    IMAGE_ROOM_ID => $entity->getId(),
                     IMAGE_PATH => $imagePath
                 ]);
             }
@@ -68,6 +74,9 @@ class RoomRepository extends DataTableRepository
      * Funkce pro DataTable komponentu
      */
 
+    /**
+     * @return array
+     */
     final public function getDataTableArray(): array
     {
         parent::getDataTableArray();
@@ -105,7 +114,7 @@ class RoomRepository extends DataTableRepository
                     $this->baseSelection->where(ROOM_HOTEL_ID . ' IN ('
                         . ' SELECT ' . HOTEL_ID
                         . ' FROM '   . TABLE_HOTELS
-                        . ' WHERE '  . HOTEL_CITY . ' LIKE %?%)', $filterValue);
+                        . ' WHERE '  . HOTEL_CITY . ' LIKE ?)', '%' . $filterValue . '%');
                     break;
                 case ROOM_EQUIPMENT_ID:
                     $this->baseSelection->where(ROOM_ID . ' IN ('

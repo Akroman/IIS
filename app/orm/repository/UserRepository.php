@@ -17,6 +17,9 @@ use YetORM\Entity;
 
 class UserRepository extends BaseRepository implements IAuthenticator, IAuthorizator
 {
+    /**
+     * Seznam rolí
+     */
     const
         ROLE_CUSTOMER = 'Customer',
         ROLE_RECEPTIONIST = 'Receptionist',
@@ -37,7 +40,12 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
     }
 
 
-
+    /**
+     * Implementace funkce pro autentizaci a přihlášení uživatele
+     * @param array $credentials
+     * @return IIdentity
+     * @throws AuthenticationException
+     */
     public function authenticate(array $credentials): IIdentity
     {
         list($login, $password) = $credentials;
@@ -58,7 +66,13 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
     }
 
 
-
+    /**
+     * Implementace funkce isAllowed, určuje privilegia uživatelských rolí
+     * @param string|null $role
+     * @param string|null $resource
+     * @param string|null $privilege
+     * @return bool
+     */
     public function isAllowed($role, $resource, $privilege): bool
     {
         if ($role === self::ROLE_ADMIN) {

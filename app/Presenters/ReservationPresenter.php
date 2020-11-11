@@ -26,7 +26,10 @@ class ReservationPresenter extends BasePresenter
     }
 
 
-
+    /**
+     * Rezervační formulář
+     * @return Form
+     */
     protected function createComponentReservationForm(): Form
     {
         $form = new Form;
@@ -51,8 +54,11 @@ class ReservationPresenter extends BasePresenter
     }
 
 
-
-    public function onReservationFormSuccess(Form $form)
+    /**
+     * Callback pro uložení rezervace
+     * @param Form $form
+     */
+    public function onReservationFormSuccess(Form $form): void
     {
         $values = $form->getValues(TRUE);
         try {

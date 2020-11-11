@@ -11,11 +11,14 @@ class Room extends BaseEntity
 {
     use EntityImageTrait;
 
-    const ROOM_TYPE_STANDARD = 1;
+    /**
+     * Konstanty pro typy pokojů
+     */
 
-    const ROOM_TYPE_BUSINESS = 2;
-
-    const ROOM_TYPES = [
+    const
+        ROOM_TYPE_STANDARD = 1,
+        ROOM_TYPE_BUSINESS = 2,
+        ROOM_TYPES = [
         self::ROOM_TYPE_STANDARD => 'Standard',
         self::ROOM_TYPE_BUSINESS => 'Business'
     ];
@@ -32,7 +35,9 @@ class Room extends BaseEntity
     }
 
 
-
+    /**
+     * @return int
+     */
     public function getCapacity(): int
     {
         return $this->get(ROOM_CAPACITY);
@@ -55,7 +60,11 @@ class Room extends BaseEntity
     }
 
 
-
+    /**
+     * Nastaví pole vybavení pro vložení do databáze
+     * @param array $equipment
+     * @return $this
+     */
     public function setEquipmentToInsert(array $equipment): Room
     {
         $this->equipmentToInsert = $equipment;
@@ -63,14 +72,18 @@ class Room extends BaseEntity
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getEquipmentToInsert(): array
     {
         return $this->equipmentToInsert;
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getImages(): array
     {
         return $this->record->related(TABLE_ROOM_IMAGES, ROOM_ID)

@@ -17,7 +17,10 @@ class Reservation extends BaseEntity
     }
 
 
-
+    /**
+     * @param $user
+     * @return $this
+     */
     public function setUser($user): Reservation
     {
         $this->set(USER_ID, $user instanceof User ? $user->getId() : $user);
@@ -25,7 +28,10 @@ class Reservation extends BaseEntity
     }
 
 
-
+    /**
+     * @param $room
+     * @return $this
+     */
     public function setRoom($room): Reservation
     {
         $this->set(ROOM_ID, $room instanceof Room ? $room->getId() : $room);
@@ -33,7 +39,10 @@ class Reservation extends BaseEntity
     }
 
 
-
+    /**
+     * @param DateTime $date
+     * @return $this
+     */
     public function setDateFrom(DateTime $date): Reservation
     {
         $this->set(RESERVATION_DATE_FROM, $date);
@@ -41,7 +50,10 @@ class Reservation extends BaseEntity
     }
 
 
-
+    /**
+     * @param $date
+     * @return $this
+     */
     public function setDateTo($date): Reservation
     {
         $this->set(RESERVATION_DATE_TO, $date);

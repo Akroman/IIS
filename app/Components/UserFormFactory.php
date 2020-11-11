@@ -39,8 +39,11 @@ class UserFormFactory
     }
 
 
-
-    public function createUserForm()
+    /**
+     * Formulář pro registraci nebo editaci uživatele
+     * @return Form
+     */
+    public function createUserForm(): Form
     {
         $form = new Form;
 

@@ -20,7 +20,11 @@ class HotelRepository extends DataTableRepository
     }
 
 
-
+    /**
+     * Override persist metody pro uložení obrázků
+     * @param Entity $entity
+     * @return bool|void
+     */
     public function persist(Entity $entity)
     {
         /** @var $entity Hotel */
@@ -29,10 +33,10 @@ class HotelRepository extends DataTableRepository
 
             foreach ($entity->getImagesToInsert() as $imagePath) {
                 DatabaseUtils::insertOrUpdate($this->database, TABLE_HOTEL_IMAGES, [
-                    HOTEL_ID => $entity->getId(),
+                    IMAGE_HOTEL_ID => $entity->getId(),
                     IMAGE_PATH => $imagePath
                 ], [
-                    HOTEL_ID => $entity->getId(),
+                    IMAGE_HOTEL_ID => $entity->getId(),
                     IMAGE_PATH => $imagePath
                 ]);
             }
@@ -44,6 +48,9 @@ class HotelRepository extends DataTableRepository
      * Funkce pro DataTable komponentu
      */
 
+    /**
+     * @return array
+     */
     final public function getDataTableArray(): array
     {
         parent::getDataTableArray();
@@ -69,7 +76,7 @@ class HotelRepository extends DataTableRepository
         foreach ($filters as $filterType => $filterValue) {
             switch ($filterType) {
                 case HOTEL_CITY:
-                    $this->baseSelection->where(HOTEL_CITY . ' LIKE %?%', $filterValue);
+                    $this->baseSelection->where(HOTEL_CITY . ' LIKE ?', '%' . $filterValue . '%');
                     break;
                 case HOTEL_STAR_RATING:
                     $this->baseSelection->where(HOTEL_STAR_RATING, $filterValue);
