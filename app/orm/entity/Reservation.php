@@ -4,10 +4,20 @@
 namespace HotelSystem\Model\Entity;
 
 
+use HotelSystem\Model\Repository\BaseRepository;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\DateTime;
 
 class Reservation extends BaseEntity
 {
+    public function __construct(BaseRepository $repository, ?ActiveRow $row = NULL)
+    {
+        parent::__construct($repository, $row);
+        $this->idColumn = RESERVATION_ID;
+    }
+
+
+
     public function setUser($user): Reservation
     {
         $this->set(USER_ID, $user instanceof User ? $user->getId() : $user);

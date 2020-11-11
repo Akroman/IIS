@@ -4,10 +4,13 @@
 namespace HotelSystem\Model\Entity;
 
 
-use Nette\Http\FileUpload;
+use HotelSystem\Model\Repository\BaseRepository;
+use Nette\Database\Table\ActiveRow;
 
 class Room extends BaseEntity
 {
+    use EntityImageTrait;
+
     const ROOM_TYPE_STANDARD = 1;
 
     const ROOM_TYPE_BUSINESS = 2;
@@ -20,8 +23,20 @@ class Room extends BaseEntity
     /** @var array */
     private $equipmentToInsert = [];
 
-    /** @var array */
-    private $imagesToInsert = [];
+
+
+    public function __construct(BaseRepository $repository, ?ActiveRow $row = NULL)
+    {
+        parent::__construct($repository, $row);
+        $this->idColumn = ROOM_ID;
+    }
+
+
+
+    public function getCapacity(): int
+    {
+        return $this->get(ROOM_CAPACITY);
+    }
 
 
     /**
@@ -30,6 +45,9 @@ class Room extends BaseEntity
      */
     public function getEquipment(): array
     {
+        if ($this->isNew()) {
+            return [];
+        }
         $equipmentIds = $this->record->related(TABLE_ROOM_EQUIPMENT, ROOM_ID)->select(EQUIPMENT_ID);
         return $this->repository->getDatabase()->table(TABLE_EQUIPMENT)
             ->where(EQUIPMENT_ID, $equipmentIds)
@@ -49,21 +67,6 @@ class Room extends BaseEntity
     public function getEquipmentToInsert(): array
     {
         return $this->equipmentToInsert;
-    }
-
-
-
-    public function addImage(string $imagePath): Room
-    {
-        $this->imagesToInsert[] = $imagePath;
-        return $this;
-    }
-
-
-
-    public function getImagesToInsert(): array
-    {
-        return $this->imagesToInsert;
     }
 
 

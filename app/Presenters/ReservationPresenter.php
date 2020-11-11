@@ -52,7 +52,7 @@ class ReservationPresenter extends BasePresenter
 
 
 
-    protected function onReservationFormSuccess(Form $form)
+    public function onReservationFormSuccess(Form $form)
     {
         $values = $form->getValues(TRUE);
         try {

@@ -121,12 +121,12 @@
     <div   class="fill" id="sidebar-wrapper" style="background:rgba(0,0,0,0.85);">
         <div class="sidebar-heading navbar-brand" style="color:rgba(255, 255, 255, 0.95);font-size:25px;margin-left:25px;text-decoration: none"><a n:href="Homepage:dashboard" style="text-decoration: none;color:rgba(255, 255, 255, 0.95);">Kataraz</a></div>
         <div class="list-group list-group-flush">
-            <a n:href="Homepage:dashboard" class="active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-user-o" aria-hidden="true"></i> Dashboard</a>
-            <a n:href="Hotel:edit" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-user-o" aria-hidden="true"></i> Přidat hotel</a>
-            <a href="#" class="border-bottom" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Seznam hotelů</a>
-            <a n:href="Room:edit" class="border-bottom" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Přidat pokoj</a>
-            <a href="#" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-plus-square-o" aria-hidden="true"></i> Seznam pokojů</a>
-            <a n:href="Reservation:edit" class="border-bottom" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-list-alt" aria-hidden="true"></i> Rezervovat</a>
+            <a n:href="Homepage:dashboard" n:class="$presenter->isLinkCurrent('Homepage:dashboard') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-user-o" aria-hidden="true"></i> Dashboard</a>
+            <a n:if="$user->isAllowed('hotel', 'edit')" n:href="Hotel:edit" n:class="$presenter->isLinkCurrent('Hotel:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-user-o" aria-hidden="true"></i> Přidat hotel</a>
+            <a n:href="Hotel:default"  n:class="border-bottom, $presenter->isLinkCurrent('Homepage:default') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Seznam hotelů</a>
+            <a n:if="$user->isAllowed('room', 'edit')" n:href="Room:edit" n:class="border-bottom, $presenter->isLinkCurrent('Room:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Přidat pokoj</a>
+            <a n:href="Room:default" n:class="$presenter->isLinkCurrent('Room:default') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-plus-square-o" aria-hidden="true"></i> Seznam pokojů</a>
+            <a n:href="Reservation:edit" n:class="border-bottom, $presenter->isLinkCurrent('Reservation:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-list-alt" aria-hidden="true"></i> Rezervovat</a>
             <a data-toggle="modal" data-target="#formAddFolder" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-upload" aria-hidden="true"></i> Stav rezervace</a>
             <a data-toggle="modal" data-target="#formDeleteFile" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 16px;"><i class="fa fa-upload" aria-hidden="true"></i>Seznam zákazníků</a>
         </div>
@@ -146,7 +146,7 @@
                 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" style="color:rgba(255, 255, 255, 0.95);">Profil</a>
+                        <a n:class="nav-link, $presenter->isLinkCurrent('User:edit') ? active" n:href="User:edit userId => $user->getId()" style="color:rgba(255, 255, 255, 0.95);">Profil</a>
                     </li>
                     <li class="nav-item active">
                         {control logoutForm}
@@ -165,8 +165,11 @@
 <!-- /#wrapper -->
 
 <!-- Bootstrap core JavaScript -->
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+{block scripts}
+    <script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+{/block}
 
 
 

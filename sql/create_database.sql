@@ -240,9 +240,37 @@ ALTER TABLE `room_images`
 --
 ALTER TABLE `user_roles`
   ADD CONSTRAINT `role_id_fk` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `user_role_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `user_role_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+INSERT INTO `equipment` (`equipment_id`, `equipment_name`) VALUES
+(1, 'Wi-Fi'),
+(2, 'Televize'),
+(3, 'Balkón'),
+(4, 'Sprchový kout'),
+(5, 'Vana'),
+(6, 'Umyvadlo'),
+(7, 'Toaleta'),
+(8, 'Stůl'),
+(9, 'Židle');
+
+
+CREATE TABLE `hotel_images` (
+    `image_id` INT NOT NULL AUTO_INCREMENT,
+    `image_hotel_id` INT NOT NULL,
+    `image_path` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`image_id`)
+) ENGINE = InnoDB;
+ALTER TABLE `hotel_images` ADD CONSTRAINT `image_hotel_id_fk` FOREIGN KEY (`image_hotel_id`) REFERENCES `hotel`(`hotel_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+CREATE TABLE `hotel_owners` (
+    `hotel_owner_id` INT NOT NULL AUTO_INCREMENT,
+    `hotel_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    PRIMARY KEY (`hotel_owner_id`)
+) ENGINE = InnoDB;

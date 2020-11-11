@@ -63,7 +63,7 @@ class UserFormFactory
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
             ->setHtmlAttribute('placeholder', 'Zadejte svoje telefonní číslo ...');
 
-        $form->addText(USER_EMAIL, 'Email (*)')
+        $form->addEmail(USER_EMAIL, 'Email (*)')
             ->setRequired('Prosím vyplňte email')
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')

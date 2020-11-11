@@ -5,6 +5,7 @@ namespace HotelSystem\Model\Entity;
 
 
 use HotelSystem\Model\Repository\BaseRepository;
+use Nette\Database\Table\ActiveRow;
 
 class User extends BaseEntity
 {
@@ -13,7 +14,7 @@ class User extends BaseEntity
 
 
 
-    public function __construct(BaseRepository $repository, $row = NULL)
+    public function __construct(BaseRepository $repository, ?ActiveRow $row = NULL)
     {
         parent::__construct($repository, $row);
         $this->idColumn = USER_ID;

@@ -1,0 +1,21 @@
+{*
+ * Komponenta pro stránkování, může být klidně umístěna i pod tabulkou
+ * ve VisualPaginator.latte lze změnit její vzhled
+ *}
+{control visualPaginator}
+
+{snippet table}
+    {foreach $results as $resultId => $result}
+        {*
+         * Zde bude vykreslování jednotlivých položek (hotely nebo pokoje)
+         * $result je pole s prvky 'title', 'description' a 'images'
+         * kde 'images' je pole ve tvaru imageID => imagePath
+         * $resultId je ID entity, slouží pro vygenerování linku na view šablonu dané entity
+         *}
+    {/foreach}
+{/snippet}
+
+{*
+ * Komponenta s filtry
+ *}
+{control filters}

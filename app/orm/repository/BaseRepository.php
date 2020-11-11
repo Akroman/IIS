@@ -8,7 +8,7 @@ use HotelSystem\Model\Entity\BaseEntity;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-class BaseRepository extends \YetORM\Repository
+abstract class BaseRepository extends \YetORM\Repository
 {
     /**
      * Vytvoří entitu z $row, pokud je $row NULL, vytvoří novou entitu
@@ -39,5 +39,12 @@ class BaseRepository extends \YetORM\Repository
     public function getDatabase(): Context
     {
         return $this->database;
+    }
+
+
+
+    public function getTable($table = NULL)
+    {
+        return parent::getTable($table);
     }
 }
