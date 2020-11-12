@@ -102,7 +102,6 @@
                 margin-left: -19rem;
             }
         }
-
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -144,7 +143,7 @@
     <div id="page-content-wrapper">
 
         <nav class="navbar navbar-expand-lg navbar-dark border-bottom" style="background:rgba(0,0,0,0.85);">
-
+            <button class="btn btn-danger btn-lg" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></button>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -176,7 +175,12 @@
 
 </div>
 <!-- /#wrapper -->
-
+<script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
 <!-- Bootstrap core JavaScript -->
 {block scripts}
     <script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
