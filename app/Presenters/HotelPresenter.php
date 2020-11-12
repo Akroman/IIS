@@ -20,12 +20,12 @@ class HotelPresenter extends BasePresenter
 
 
 
-    public function actionEdit($id = NULL)
+    public function actionEdit($hotelId = NULL)
     {
         if (!$this->getUser()->isAllowed('hotel', 'edit')) {
             $this->error('Na tuto akci nemáte dostatečná oprávnění', IResponse::S403_FORBIDDEN);
         }
-        $this->hotel = $this->hotelRepository->getByID($id);
+        $this->hotel = $this->hotelRepository->getByID($hotelId);
     }
 
 

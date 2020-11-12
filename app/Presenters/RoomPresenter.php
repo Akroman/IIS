@@ -39,11 +39,7 @@ class RoomPresenter extends BasePresenter
      */
     protected function createComponentRoomDataTable(): DataTable
     {
-        $equipment = $this->roomRepository->getDatabase()->table(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
-
-        foreach ($equipment as $key => $equip) {
-            $equipment[$key] = '  ' . $equip;
-        }
+        $equipment = $this->roomRepository->getEquipment();
 
         $filters = [
             [
@@ -123,13 +119,7 @@ class RoomPresenter extends BasePresenter
 
         $form->setDefaults($this->room->getData());
 
-        $equipment = $this->roomRepository->getDatabase()->table(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
-
-        for ($i=1;$i<sizeof($equipment)+1;$i++){
-            $equipment[$i] = '  '.$equipment[$i];
-        }
-
-        $form->addCheckboxList(EQUIPMENT_ID, 'Vybavení pokoje', $equipment)
+        $form->addCheckboxList(EQUIPMENT_ID, 'Vybavení pokoje', $this->roomRepository->getEquipment())
             ->setDefaultValue(array_keys($this->room->getEquipment()))
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 

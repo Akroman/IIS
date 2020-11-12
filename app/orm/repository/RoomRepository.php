@@ -22,6 +22,16 @@ class RoomRepository extends DataTableRepository
 
 
     /**
+     * @return string[]
+     */
+    public function getEquipment()
+    {
+        return array_map(function (string $equipmentName) { return ' ' . $equipmentName; },
+            $this->getTable(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME));
+    }
+
+
+    /**
      * Override persistu kvůli uložení vybavení do mezitabulky
      * @param Entity $entity
      * @return bool|void
@@ -37,7 +47,7 @@ class RoomRepository extends DataTableRepository
              */
             foreach ($entity->getEquipment() as $equipmentId => $equipmentName) {
                 if (!in_array($equipmentId, $entity->getEquipmentToInsert())) {
-                    $this->getTable()
+                    $this->getTable(TABLE_ROOM_EQUIPMENT)
                         ->where(ROOM_ID, $entity->getId())
                         ->where(EQUIPMENT_ID, $equipmentId)
                         ->delete();
@@ -86,7 +96,8 @@ class RoomRepository extends DataTableRepository
             array_map(function (Room $room) {
                 return [
                     'title' => 'Pokoj ' . $room->getCapacity() . ' lůžkový',
-                    'description' => implode(', ', $room->getEquipment()),
+                    'description' => 'Cena: ' . $room->getPrice() . PHP_EOL
+                        . 'Vybavení: ' . implode(', ', $room->getEquipment()),
                     'images' => array_map(function (string $imagePath) {
                         return Image::fromFile($imagePath);
                     }, array_slice($room->getImages(), 0, self::$imagesCount))

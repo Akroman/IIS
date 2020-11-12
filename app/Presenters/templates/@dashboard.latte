@@ -134,7 +134,7 @@
             <a n:href="Room:default" n:class="border-bottom, $presenter->isLinkCurrent('Room:default') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Seznam pokojů</a>
             <a n:href="Reservation:edit" n:class="$presenter->isLinkCurrent('Reservation:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-list-alt" aria-hidden="true"></i> Rezervovat</a>
             <a data-toggle="modal" n:class="border-bottom" data-target="#formAddFolder" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-pie-chart" aria-hidden="true"></i> Stav rezervace</a>
-            <a data-toggle="modal" data-target="#formDeleteFile" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-user-o" aria-hidden="true"></i> Seznam zákazníků</a>
+            <a n:if="$user->isAllowed('user', 'overview')" data-toggle="modal" data-target="#formDeleteFile" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-user-o" aria-hidden="true"></i> Seznam zákazníků</a>
         </div>
     </div>
     <!-- /#sidebar-wrapper -->

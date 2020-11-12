@@ -45,6 +45,15 @@ class Room extends BaseEntity
 
 
     /**
+     * @return float
+     */
+    public function getPrice(): float
+    {
+        return $this->get(ROOM_PRICE);
+    }
+
+
+    /**
      * Vrací pole vybavení pokoje
      * @return array equipmentId => equipmentName
      */
@@ -53,9 +62,10 @@ class Room extends BaseEntity
         if ($this->isNew()) {
             return [];
         }
-        $equipmentIds = $this->record->related(TABLE_ROOM_EQUIPMENT, ROOM_ID)->select(EQUIPMENT_ID);
+        $equipmentIds = $this->record->related(TABLE_ROOM_EQUIPMENT, ROOM_ID)
+            ->fetchPairs(ROOM_EQUIPMENT_ID, EQUIPMENT_ID);
         return $this->repository->getDatabase()->table(TABLE_EQUIPMENT)
-            ->where(EQUIPMENT_ID, $equipmentIds)
+            ->where(EQUIPMENT_ID, array_values($equipmentIds))
             ->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME);
     }
 
@@ -86,7 +96,7 @@ class Room extends BaseEntity
      */
     public function getImages(): array
     {
-        return $this->record->related(TABLE_ROOM_IMAGES, ROOM_ID)
-            ->fetchPairs(IMAGE_ROOM_ID, IMAGE_PATH);
+        return $this->record->related(TABLE_ROOM_IMAGES, IMAGE_ROOM_ID)
+            ->fetchPairs(IMAGE_ID, IMAGE_PATH);
     }
 }
