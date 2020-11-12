@@ -2,9 +2,7 @@
 {block content}
 
 <div class="row" style="margin-top:50px;background-color: #333333;margin-left: 50px;margin-right:50px;padding-top: 50px;padding-bottom: 50px;border-radius: 25px;border-style: solid;">
-    <div class="col-lg-2 col-md-2 text-center">
-    </div>
-    <div class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
+    <div n:if="$user->isAllowed('hotel', 'edit')" class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
         <a n:href="Hotel:edit" style="cursor: pointer;color:black;text-decoration: none;">
             <div style="padding-top: 50px;padding-bottom:50px;">
                 <i class="fa fa-plus-square-o" style="font-size: 100px;" aria-hidden="true"></i>
@@ -12,7 +10,8 @@
             </div>
         </a>
     </div>
-    <div class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
+
+    <div n:if="$user->isAllowed('room', 'edit')" class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
         <a n:href="Room:edit" style="cursor: pointer;color:black;text-decoration: none;">
         <div class="mt-5 mb-5">
             <i class="fa fa-plus-square-o" style="font-size: 100px;" aria-hidden="true"></i>
@@ -20,6 +19,7 @@
         </div>
         </a>
     </div>
+
     <div class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
         <a n:href="Hotel:default" style="cursor: pointer;color:black;text-decoration: none;">
         <div class="mt-5 mb-5">
@@ -38,8 +38,6 @@
         </a>
     </div>
 
-    <div class="col-lg-2 col-md-2 text-center">
-    </div>
     <div class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
         <a n:href="Reservation:edit" style="cursor: pointer;color:black;text-decoration: none;">
         <div class="mt-5 mb-5">
@@ -48,6 +46,7 @@
         </div>
         </a>
     </div>
+
     <div class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
         <a n:href="Reservation:edit" style="cursor: pointer;color:black;text-decoration: none;">
         <div class="mt-5 mb-5">
@@ -56,7 +55,8 @@
         </div>
         </a>
     </div>
-    <div class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
+
+    <div n:if="$user->isAllowed('user', 'overview')" class="col-lg-2 col-md-2 text-center ramecek" style="background-color: #d9534f;color: whitesmoke;">
         <a n:href="Reservation:edit" style="cursor: pointer;color:black;text-decoration: none;">
         <div class="mt-5 mb-5">
             <i class="fa fa-user-o" style="font-size: 100px;margin-bottom: 5px;" aria-hidden="true"></i>

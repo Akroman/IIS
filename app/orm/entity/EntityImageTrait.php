@@ -41,7 +41,7 @@ trait EntityImageTrait
      * Funkce by měla vracet pole cest k obrázkům získané z databáze
      * @return array
      */
-    public abstract function getImagesPath(): array;
+    protected abstract function getImagesPath(): array;
 
 
     /**

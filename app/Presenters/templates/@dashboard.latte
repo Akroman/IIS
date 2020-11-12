@@ -153,10 +153,16 @@
                 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
 
                     <li class="nav-item">
-                        <a n:class="nav-link, $presenter->isLinkCurrent('User:edit') ? active" n:href="User:edit userId => $user->getId()" style="color:rgba(255, 255, 255, 0.95);"><i class="fa fa-user-o" aria-hidden="true"></i> Profil</a>
+                        <a n:class="nav-link, $presenter->isLinkCurrent('User:edit') ? active" n:href="User:edit userId => $user->getId()" style="color:rgba(255, 255, 255, 0.95);"><i class="fa fa-user-o" aria-hidden="true"></i>
+                            {if $user->isLoggedIn()}Profil{else}Registrovat{/if}
+                        </a>
                     </li>
                     <li class="nav-item active">
-                      {control logoutForm}
+                        {if $user->isLoggedIn()}
+                            {control logoutForm}
+                        {else}
+                            <a n:href="User:login" class="nav-link">Přihlásit se</a>
+                        {/if}
                     </li>
                 </ul>
             </div>
