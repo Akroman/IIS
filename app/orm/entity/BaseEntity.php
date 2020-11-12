@@ -96,7 +96,7 @@ abstract class BaseEntity extends \YetORM\Entity
      */
     protected function findOneToOne(string $table, ?string $throughColumn = NULL): ?ActiveRow
     {
-        return $this->record->ref($table, $throughColumn);
+        return $this->record->ref($table, $throughColumn)->getRow();
     }
 
 

@@ -59,9 +59,11 @@ class DataTable extends Control
         switch (TRUE) {
             case $this->repository instanceof HotelRepository:
                 $this->template->title = 'Seznam hotelů';
+                $this->template->destPresenter = 'Hotel';
                 break;
             case $this->repository instanceof RoomRepository:
                 $this->template->title = 'Seznam pokojů';
+                $this->template->destPresenter = 'Room';
                 break;
             default:
                 $this->template->title = '';
@@ -126,7 +128,7 @@ class DataTable extends Control
         }
 
         $form->addSubmit('send', 'Filtrovat')
-            ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
+            ->setHtmlAttribute('class', 'btn btn-danger btn-lg btn-block')
             ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(TRUE);
