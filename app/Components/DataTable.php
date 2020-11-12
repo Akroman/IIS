@@ -5,6 +5,8 @@ namespace HotelSystem\Components;
 
 
 use HotelSystem\Model\Repository\DataTableRepository;
+use HotelSystem\Model\Repository\HotelRepository;
+use HotelSystem\Model\Repository\RoomRepository;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
@@ -54,6 +56,17 @@ class DataTable extends Control
 
     public function render()
     {
+        switch (TRUE) {
+            case $this->repository instanceof HotelRepository:
+                $this->template->title = 'Seznam hotelů';
+                break;
+            case $this->repository instanceof RoomRepository:
+                $this->template->title = 'Seznam pokojů';
+                break;
+            default:
+                $this->template->title = '';
+                break;
+        }
         $this->template->results = $this->getResultsArray();
         $this->template->render(__DIR__ . '/DataTable.latte');
     }

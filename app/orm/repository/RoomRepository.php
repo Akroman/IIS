@@ -98,9 +98,7 @@ class RoomRepository extends DataTableRepository
                     'title' => 'Pokoj ' . $room->getCapacity() . ' lůžkový',
                     'description' => 'Cena: ' . $room->getPrice() . PHP_EOL
                         . 'Vybavení: ' . implode(', ', $room->getEquipment()),
-                    'images' => array_map(function (string $imagePath) {
-                        return Image::fromFile($imagePath);
-                    }, array_slice($room->getImages(), 0, self::$imagesCount))
+                    'images' => array_slice($room->getImages(), 0, self::$imagesCount)
                 ];
             }, $this->dataCollection)
         );
@@ -140,7 +138,7 @@ class RoomRepository extends DataTableRepository
                         . ' WHERE '  . EQUIPMENT_ID . ' IN ?)', array_values($filterValue));
                     break;
                 default:
-                    throw new InvalidArgumentException('Unknow filter type');
+                    throw new InvalidArgumentException('Unknown filter type');
             }
         }
         return $this;

@@ -29,6 +29,27 @@ class HotelPresenter extends BasePresenter
     }
 
 
+
+    public function actionView($hotelId)
+    {
+        $this->hotel = $this->hotelRepository->getByID($hotelId);
+    }
+
+
+
+    public function renderView()
+    {
+        $this->template->name = $this->hotel->getName();
+        $this->template->description = $this->hotel->getDescription();
+        $this->template->starRating = $this->hotel->getStarRating();
+        $this->template->fullAddress = $this->hotel->getFullAddress();
+        $this->template->images = $this->hotel->getImages();
+        $this->template->owner = $this->hotel->getOwner();
+        $this->template->email = $this->hotel->getEmail();
+        $this->template->phone = $this->hotel->getPhone();
+    }
+
+
     /**
      * Komponenta pro přehled hotelů
      * @return DataTable

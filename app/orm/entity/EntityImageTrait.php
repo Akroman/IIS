@@ -4,6 +4,8 @@
 namespace HotelSystem\Model\Entity;
 
 
+use Nette\Utils\Image;
+
 /**
  * Trait pro entity s obrázky
  * Trait EntityImageTrait
@@ -39,5 +41,15 @@ trait EntityImageTrait
      * Funkce by měla vracet pole cest k obrázkům získané z databáze
      * @return array
      */
-    public abstract function getImages(): array;
+    public abstract function getImagesPath(): array;
+
+
+    /**
+     * Vrací pole objektů Image, pole je vytvořeno z cest k obrázkům získaných pomocí funkce getImagesPath
+     * @return array
+     */
+    public function getImages(): array
+    {
+        return array_map(function (string $imagePath) { return Image::fromFile($imagePath); }, $this->getImagesPath());
+    }
 }

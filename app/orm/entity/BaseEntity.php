@@ -87,4 +87,29 @@ abstract class BaseEntity extends \YetORM\Entity
     {
         return !(bool) $this->getId();
     }
+
+
+    /**
+     * @param string $table
+     * @param string|null $throughColumn
+     * @return ActiveRow|null
+     */
+    protected function findOneToOne(string $table, ?string $throughColumn = NULL): ?ActiveRow
+    {
+        return $this->record->ref($table, $throughColumn);
+    }
+
+
+    /**
+     * @param string $entity
+     * @param string $table
+     * @param string|null $throughColumn
+     * @return BaseEntity
+     */
+    protected function getOneToOne(string $entity, string $table, ?string $throughColumn = NULL): BaseEntity
+    {
+        $data = $this->findOneToOne($table, $throughColumn);
+        $entity = 'HotelSystem\Model\Entity\\'.$entity;
+        return new $entity($this->repository, $data);
+    }
 }

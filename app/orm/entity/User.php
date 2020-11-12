@@ -40,6 +40,33 @@ class User extends BaseEntity
 
 
     /**
+     * @return string
+     */
+    public function getFullName(): string
+    {
+        return $this->get(USER_NAME) . ' ' . $this->get(USER_SURNAME);
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->get(USER_EMAIL);
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getPhone(): string
+    {
+        return $this->get(USER_PHONE);
+    }
+
+
+    /**
      * @return array
      */
     public function getRoles(): array

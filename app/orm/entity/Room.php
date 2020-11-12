@@ -19,9 +19,9 @@ class Room extends BaseEntity
         ROOM_TYPE_STANDARD = 1,
         ROOM_TYPE_BUSINESS = 2,
         ROOM_TYPES = [
-        self::ROOM_TYPE_STANDARD => 'Standard',
-        self::ROOM_TYPE_BUSINESS => 'Business'
-    ];
+            self::ROOM_TYPE_STANDARD => 'Standard',
+            self::ROOM_TYPE_BUSINESS => 'Business'
+        ];
 
     /** @var array */
     private $equipmentToInsert = [];
@@ -50,6 +50,15 @@ class Room extends BaseEntity
     public function getPrice(): float
     {
         return $this->get(ROOM_PRICE);
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getTypeName(): string
+    {
+        return self::ROOM_TYPES[$this->get(ROOM_TYPE)];
     }
 
 
@@ -94,7 +103,7 @@ class Room extends BaseEntity
     /**
      * @return array
      */
-    public function getImages(): array
+    public function getImagesPath(): array
     {
         return $this->record->related(TABLE_ROOM_IMAGES, IMAGE_ROOM_ID)
             ->fetchPairs(IMAGE_ID, IMAGE_PATH);

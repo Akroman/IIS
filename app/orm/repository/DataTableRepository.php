@@ -39,7 +39,7 @@ abstract class DataTableRepository extends BaseRepository
      * entityID => [
      *          title => title
      *          description => description
-     *          image => image
+     *          images => images
      *      ]
      * @return array
      * @throws InvalidStateException

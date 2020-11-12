@@ -33,6 +33,24 @@ class RoomPresenter extends BasePresenter
     }
 
 
+
+    public function actionView($roomId)
+    {
+        $this->room = $this->roomRepository->getByID($roomId);
+    }
+
+
+
+    public function renderView()
+    {
+        $this->template->capacity = $this->room->getCapacity();
+        $this->template->price = $this->room->getPrice();
+        $this->template->type = $this->room->getTypeName();
+        $this->template->equipment = implode(', ', $this->room->getEquipment());
+        $this->template->images = $this->room->getImages();
+    }
+
+
     /**
      * Komponenta pro přehled pokojů
      * @return DataTable
