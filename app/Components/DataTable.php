@@ -113,7 +113,7 @@ class DataTable extends Control
         }
 
         $form->addSubmit('send', 'Filtrovat')
-            ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
+            ->setHtmlAttribute('class', 'btn btn-danger btn-lg btn-block')
             ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = function (Form $form) {
             $values = $form->getValues(TRUE);

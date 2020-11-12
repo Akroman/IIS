@@ -165,6 +165,8 @@ class RoomPresenter extends BasePresenter
                 $this->room->addImage($imagePath);
             }
             $this->roomRepository->persist($this->room);
+            $this->flashMessage('Pokoj úspěšně uložen.', 'success');
+            $this->redirect('Room:default');
         } catch (\PDOException $PDOException) {
             \Tracy\Debugger::barDump($PDOException);
             $form->addError('Při ukládání došlo k chybě');
