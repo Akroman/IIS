@@ -114,8 +114,12 @@ class DataTable extends Control
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::RANGE_FILTER:
-                    $form->addText($filterProperties['name'] . '1', $filterProperties['label'] . ' od');
-                    $form->addText($filterProperties['name'] . '2', $filterProperties['label'] . ' do');
+                    $form->addText($filterProperties['name'] . '1', $filterProperties['label'] . ' od')
+                        ->setHtmlAttribute('class', 'form-control form-control-lg')
+                        ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+                    $form->addText($filterProperties['name'] . '2', $filterProperties['label'] . ' do')
+                        ->setHtmlAttribute('class', 'form-control form-control-lg')
+                        ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::INTEGER_INPUT_FILTER:
                     $form->addInteger($filterProperties['name'], $filterProperties['label'])

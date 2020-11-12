@@ -2,4 +2,64 @@
 
 {block content}
 
+<div class="row" style="padding-bottom: 40px;margin-top:40px;">
+    <div class="col-sm-2 col-lg-2">
+    </div>
+    <div class="col-sm-4 col-lg-3">
+        <div class="text-center">
+            {foreach $images as $imageID => $imagePath}
+            <img src="{$imagePath|dataStream}" width="350" style="min-height: 350px;" class="img-thumbnail" alt="profilovka">
+            {breakIf $iterator->isFirst()}
+            {/foreach}
+
+        </div><br>
+
+    </div>
+    <div class="col-sm-6">
+        <ul class="nav nav-stacked nav-pills" id="menuTabu">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#obecneUdaje">Obecné údaje</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#obrazky" >Obrázky</a>
+            </li>
+        </ul>
+        <script>
+            $(document).ready(function () {
+                $('#menuTabu a[href="#{{ old('tab') }}"]').tab('show')
+            });
+        </script>
+        <br>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="obecneUdaje" style="font-size: 18px;">
+                <div class="col-lg-8 col-md-12 col-sm-12 ">
+                    <h4><i class="fa fa-money" aria-hidden="true"></i> Cena</h4>
+                    <p style="text-align: justify;">{$price} Kč</p>
+                    <hr>
+                    <h4 style="margin-top:15px;"><i class="fa fa-address-card" aria-hidden="true"></i> Typ</h4>
+                    {$type}
+                    <hr>
+                    <h4 style="margin-top:15px;"><i class="fa fa-tasks" aria-hidden="true"></i> Počet lůžek</h4>
+                    {$capacity}
+                    <hr>
+                    <h4 style="margin-top:15px;"><i class="fa fa-info-circle" aria-hidden="true"></i> Vybavení</h4>
+                    {$equipment}
+                </div>
+
+
+            </div>
+            <div class="tab-pane" id="obrazky">
+                {foreach $images as $imageID => $imagePath}
+                {if $iterator->first}
+                {else}
+                <img src="{$imagePath|dataStream}" width="350" style="min-height: 350px;" class="img-thumbnail" alt="profilovka">
+                {/if}
+
+
+                {/foreach}
+            </div>
+        </div>
+    </div>
+</div>
 {/block}
