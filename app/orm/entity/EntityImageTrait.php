@@ -41,15 +41,17 @@ trait EntityImageTrait
      * Funkce by měla vracet pole cest k obrázkům získané z databáze
      * @return array
      */
-    protected abstract function getImagesPath(): array;
+    protected abstract function getImagesPath(): ?array;
 
 
     /**
      * Vrací pole objektů Image, pole je vytvořeno z cest k obrázkům získaných pomocí funkce getImagesPath
      * @return array
      */
-    public function getImages(): array
+    public function getImages(): ?array
     {
-        return array_map(function (string $imagePath) { return Image::fromFile($imagePath); }, $this->getImagesPath());
+        return array_map(function (string $imagePath) {
+            return Image::fromFile($imagePath)->resize(350, 350);
+        }, $this->getImagesPath());
     }
 }

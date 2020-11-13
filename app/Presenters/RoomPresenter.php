@@ -25,10 +25,19 @@ class RoomPresenter extends BasePresenter
 
     public function actionEdit($roomId = NULL, $hotelId = NULL)
     {
-        if (!$this->getUser()->isAllowed('room', 'edit')) {
+        $this->room = $this->roomRepository->getByID($roomId);
+        $this->hotelId = $hotelId;
+        $owner = $this->room->getHotel()->getOwner();
+        if (!$this->getUser()->isAllowed('room', 'edit')
+            && (!$this->getUser()->isInRole('Admin') || $owner !== $this->getUser()->getId())) {
             $this->error('Na tuto akci nemáte dostatečná práva', IResponse::S403_FORBIDDEN);
         }
-        $this->room = $this->roomRepository->getByID($roomId);
+    }
+
+
+
+    public function actionDefault($hotelId = NULL)
+    {
         $this->hotelId = $hotelId;
     }
 
@@ -41,8 +50,21 @@ class RoomPresenter extends BasePresenter
 
 
 
+    public function renderEdit()
+    {
+        $this->template->isNew = $this->room->isNew();
+        $this->template->images = $this->room->isNew()
+            ? []
+            : $this->room->getImages();
+    }
+
+
+
     public function renderView()
     {
+        $this->template->hotel = $this->room->getHotel()->getName();
+        $this->template->roomId = $this->room->getId();
+        $this->template->isUserOwner = $this->room->getHotel()->getOwner()->getId() === $this->loggedUser->getId();
         $this->template->capacity = $this->room->getCapacity();
         $this->template->price = $this->room->getPrice();
         $this->template->type = $this->room->getTypeName();
@@ -57,8 +79,6 @@ class RoomPresenter extends BasePresenter
      */
     protected function createComponentRoomDataTable(): DataTable
     {
-        $equipment = $this->roomRepository->getEquipment();
-
         $filters = [
             [
                 'type' => DataTable::SELECT_BOX_FILTER,
@@ -77,11 +97,17 @@ class RoomPresenter extends BasePresenter
                 'type' => DataTable::CHECKBOX_LIST_FILTER,
                 'name' => ROOM_EQUIPMENT_ID,
                 'label' => 'Vybavení pokoje',
-                'items' => $equipment
+                'items' => $this->roomRepository->getEquipment()
             ], [
                 'type' => DataTable::RANGE_FILTER,
                 'name' => ROOM_PRICE,
                 'label' => 'Cena'
+            ], [
+                'type' => DataTable::SELECT_BOX_FILTER,
+                'name' => HOTEL_ID,
+                'label' => 'Hotel',
+                'items' => $this->hotelRepository->getTable()->fetchPairs(HOTEL_ID, HOTEL_NAME),
+                'defaultValue' => $this->hotelId
             ]
         ];
         return new DataTable($this->roomRepository, $filters);
@@ -105,7 +131,7 @@ class RoomPresenter extends BasePresenter
                 ->fetchPairs(HOTEL_ID, HOTEL_NAME);
         }
 
-        $hotel = $form->addSelect(ROOM_HOTEL_ID, 'Hotel', $hotels)
+        $hotel = $form->addSelect(ROOM_HOTEL_ID, 'Hotel (*)', $hotels)
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('placeholder', 'Počet lůžek ...')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
@@ -114,14 +140,14 @@ class RoomPresenter extends BasePresenter
             $hotel->setDefaultValue($this->hotelId);
         }
 
-        $form->addInteger(ROOM_CAPACITY, 'Počet lůžek')
+        $form->addInteger(ROOM_CAPACITY, 'Počet lůžek (*)')
             ->setRequired('Prosím vyplňte počet lůžek')
             ->setDefaultValue(1)
             ->setHtmlAttribute('class', 'form-control form-control-lg text-center')
             ->setHtmlAttribute('placeholder', 'Počet lůžek ...')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addText(ROOM_PRICE, 'Cena za noc')
+        $form->addText(ROOM_PRICE, 'Cena za noc (*)')
             ->setRequired('Prosím vyplňte cenu za noc')
             ->addRule(Form::FLOAT, 'Prosím zadejte platné desetinné číslo')
             ->setHtmlAttribute('class', 'form-control form-control-lg')
@@ -130,8 +156,6 @@ class RoomPresenter extends BasePresenter
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
         $form->addSelect(ROOM_TYPE, 'Typ pokoje', Room::ROOM_TYPES)
-            ->setPrompt('- Typ -')
-            ->setRequired('Prosím zvolte typ pokoje')
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
@@ -145,7 +169,7 @@ class RoomPresenter extends BasePresenter
             ->setHtmlAttribute('class', 'btn btn-danger')
             ->setHtmlAttribute('style', 'margin-left:15px;margin-bottom:15px;');
 
-        $form->addSubmit('save', 'Přidat pokoj')
+        $form->addSubmit('save', 'Uložit pokoj')
             ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
             ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = [$this, 'onRoomFormSuccess'];
@@ -184,7 +208,7 @@ class RoomPresenter extends BasePresenter
             }
             $this->roomRepository->persist($this->room);
             $this->flashMessage('Pokoj úspěšně uložen.', 'success');
-            $this->redirect('Room:default');
+            $this->redirect('Room:view', ['roomId' => $this->room->getId()]);
         } catch (\PDOException $PDOException) {
             \Tracy\Debugger::barDump($PDOException);
             $form->addError('Při ukládání došlo k chybě');

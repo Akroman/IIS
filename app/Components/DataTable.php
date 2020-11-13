@@ -69,7 +69,15 @@ class DataTable extends Control
                 $this->template->title = '';
                 break;
         }
-        $this->template->results = $this->getResultsArray();
+
+        $filtersToApply = [];
+        foreach ($this->filters as $filter) {
+            if (array_key_exists('defaultValue', $filter) && $filter['defaultValue'] !== NULL) {
+                $filtersToApply[$filter['name']] = $filter['defaultValue'];
+            }
+        }
+
+        $this->template->results = $this->getResultsArray($filtersToApply);
         $this->template->render(__DIR__ . '/DataTable.latte');
     }
 
@@ -99,17 +107,17 @@ class DataTable extends Control
         foreach ($this->filters as $filterProperties) {
             switch ($filterProperties['type']) {
                 case self::CHECKBOX_LIST_FILTER:
-                    $form->addCheckboxList($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
+                    $filter = $form->addCheckboxList($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::SELECT_BOX_FILTER:
-                    $form->addSelect($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
+                    $filter = $form->addSelect($filterProperties['name'], $filterProperties['label'], $filterProperties['items'])
                         ->setPrompt('- Vše -')
                         ->setHtmlAttribute('class', 'form-control form-control-lg')
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::TEXT_INPUT_FILTER:
-                    $form->addText($filterProperties['name'], $filterProperties['label'])
+                    $filter = $form->addText($filterProperties['name'], $filterProperties['label'])
                         ->setHtmlAttribute('class', 'form-control form-control-lg')
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
@@ -122,12 +130,15 @@ class DataTable extends Control
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 case self::INTEGER_INPUT_FILTER:
-                    $form->addInteger($filterProperties['name'], $filterProperties['label'])
+                    $filter = $form->addInteger($filterProperties['name'], $filterProperties['label'])
                         ->setHtmlAttribute('class', 'form-control form-control-lg')
                         ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
                     break;
                 default:
                     throw new InvalidArgumentException('Unknown filter type');
+            }
+            if (isset($filterProperties['defaultValue']) && isset($filter)) {
+                $filter->setDefaultValue($filterProperties['defaultValue']);
             }
         }
 

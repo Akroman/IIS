@@ -22,10 +22,11 @@ class HotelPresenter extends BasePresenter
 
     public function actionEdit($hotelId = NULL)
     {
-        if (!$this->getUser()->isAllowed('hotel', 'edit')) {
+        $this->hotel = $this->hotelRepository->getByID($hotelId);
+        if (!$this->getUser()->isAllowed('hotel', 'edit')
+            && (!$this->getUser()->isInRole('Admin') || $this->hotel->getOwner()->getId() !== $this->getUser()->getId())) {
             $this->error('Na tuto akci nemáte dostatečná oprávnění', IResponse::S403_FORBIDDEN);
         }
-        $this->hotel = $this->hotelRepository->getByID($hotelId);
     }
 
 
@@ -37,8 +38,21 @@ class HotelPresenter extends BasePresenter
 
 
 
+    public function renderEdit()
+    {
+        $this->template->owner = $this->hotel->getOwner();
+        $this->template->hotelId = $this->hotel->getId();
+        $this->template->isNew = $this->hotel->isNew();
+        $this->template->images = $this->hotel->isNew()
+            ? []
+            : $this->hotel->getImages();
+    }
+
+
+
     public function renderView()
     {
+        $this->template->hotelId = $this->hotel->getId();
         $this->template->name = $this->hotel->getName();
         $this->template->description = $this->hotel->getDescription();
         $this->template->starRating = $this->hotel->getStarRating();
@@ -47,6 +61,15 @@ class HotelPresenter extends BasePresenter
         $this->template->owner = $this->hotel->getOwner();
         $this->template->email = $this->hotel->getEmail();
         $this->template->phone = $this->hotel->getPhone();
+    }
+
+
+
+    public function handleDeleteImage($imageId)
+    {
+        $this->hotelRepository->getTable(TABLE_HOTEL_IMAGES)->get($imageId)->delete();
+        $this->flashMessage('Obrázek smazán', 'success');
+        $this->redrawControl('images');
     }
 
 
@@ -79,7 +102,7 @@ class HotelPresenter extends BasePresenter
     {
         $form = new Form;
 
-        $form->addText(HOTEL_NAME, 'Název hotelu')
+        $form->addText(HOTEL_NAME, 'Název hotelu (*)')
             ->setRequired('Prosím vyplňte název hotelu')
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('placeholder', 'Název hotelu...')
@@ -122,7 +145,7 @@ class HotelPresenter extends BasePresenter
             ->setHtmlAttribute('class', 'btn btn-danger')
             ->setHtmlAttribute('style', 'margin-left:15px;margin-bottom:15px;');
 
-        $form->addSubmit('save', 'Přidat hotel')
+        $form->addSubmit('save', 'Uložit hotel')
             ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
             ->setHtmlAttribute('style', 'margin-left:15px;');
 
@@ -162,7 +185,7 @@ class HotelPresenter extends BasePresenter
             }
             $this->hotelRepository->persist($this->hotel);
             $this->flashMessage('Hotel úspěšně uložen', 'success');
-            $this->redirect('Hotel:default');
+            $this->redirect('Hotel:view', ['hotelId' => $this->hotel->getId()]);
         } catch (\PDOException $PDOexception) {
             \Tracy\Debugger::barDump($PDOexception);
             $form->addError('Při ukládání došlo k chybě');

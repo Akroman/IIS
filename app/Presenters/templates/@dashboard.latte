@@ -124,17 +124,16 @@
 <div class="d-flex" id="wrapper">
 
     <!-- Sidebar -->
-    <div   class="fill" id="sidebar-wrapper" style="background:rgba(0,0,0,0.85);">
+    <div class="fill" id="sidebar-wrapper" style="background:rgba(0,0,0,0.85);">
         <div class="sidebar-heading navbar-brand" style="color:rgba(255, 255, 255, 0.95);font-size:25px;margin-left:25px;text-decoration: none"><a n:href="Homepage:dashboard" style="text-decoration: none;color:rgba(255, 255, 255, 0.95);">Kataraz</a></div>
         <div class="list-group list-group-flush">
             <a n:href="Homepage:dashboard" n:class="$presenter->isLinkCurrent('Homepage:dashboard') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-th-large" aria-hidden="true"></i> Dashboard</a>
             <a n:if="$user->isAllowed('hotel', 'edit')" n:href="Hotel:edit" n:class="$presenter->isLinkCurrent('Hotel:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-plus-square-o" aria-hidden="true"></i> Přidat hotel</a>
             <a n:if="$user->isAllowed('room', 'edit')" n:href="Room:edit" n:class="border-bottom, $presenter->isLinkCurrent('Room:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-plus-square-o" aria-hidden="true"></i> Přidat pokoj</a>
-            <a n:href="Hotel:default"  n:class="$presenter->isLinkCurrent('Hotel:default') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Seznam hotelů</a>
+            <a n:href="Hotel:default" n:class="$presenter->isLinkCurrent('Hotel:default') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Seznam hotelů</a>
             <a n:href="Room:default" n:class="border-bottom, $presenter->isLinkCurrent('Room:default') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-list-ol" aria-hidden="true"></i> Seznam pokojů</a>
-            <a n:href="Reservation:edit" n:class="$presenter->isLinkCurrent('Reservation:edit') ? active" style="padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-list-alt" aria-hidden="true"></i> Rezervovat</a>
             <a n:class="border-bottom"  style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-pie-chart" aria-hidden="true"></i> Stav rezervace</a>
-            <a n:if="$user->isAllowed('user', 'overview')" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-user-o" aria-hidden="true"></i> Seznam zákazníků</a>
+            <a n:href="User:default" n:class="$presenter->isLinkCurrent('User:default') ? active" n:if="$user->isAllowed('user', 'overview')" style="cursor: pointer;padding-left:30px;color:rgba(255, 255, 255, 0.95);text-decoration: none;padding-bottom: 16px;padding-top: 16px;font-size: 18px;"><i class="fa fa-user-o" aria-hidden="true"></i> Seznam uživatelů</a>
         </div>
     </div>
     <!-- /#sidebar-wrapper -->
@@ -167,6 +166,19 @@
             </div>
         </nav>
 
+        {if isset($flashes) && isset($presenter)}
+            {snippet flashes}
+                <div n:foreach="$flashes as $flash" class="container-fluid" style="margin: 10px;">
+                    <div class="alert alert-{str_replace('error', 'danger', $flash->type)} alert-dismissible" role="alert">
+                        <button class="close" aria-label="Close" data-dismiss="alert" type="button">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        {$flash->message|noescape}
+                    </div>
+                </div>
+            {/snippet}
+        {/if}
+
         <div class="container-fluid">
             {include content}
         </div>
@@ -175,20 +187,18 @@
 
 </div>
 <!-- /#wrapper -->
-<script>
-    $("#menu-toggle").click(function(e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-</script>
 <!-- Bootstrap core JavaScript -->
 {block scripts}
     <script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+    </script>
 {/block}
-
-
 
 </body>
 

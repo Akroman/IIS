@@ -1,78 +1,46 @@
-{layout '../@dashboard.latte'}
+{layout '../@layoutView.latte'}
 
-{block content}
-<div class="row">
-    <div class="col-12 text-center" style="margin-top:20px;margin-bottom: 15px;"><h1> {$name}</h1>
-        <hr></div>
-</div>
-<div class="row" style="padding-bottom: 40px;">
-    <div class="col-sm-2 col-lg-2">
-    </div>
-    <div class="col-sm-4 col-lg-3">
-        <div class="text-center">
-            {foreach $images as $imageID => $imagePath}
-                <img src="{$imagePath|dataStream}" width="350" style="min-height: 350px;" class="img-thumbnail" alt="profilovka">
-                {breakIf $iterator->isFirst()}
-            {/foreach}
-            <ul class="list-group" style="margin-top:15px;">
-                <li class="list-group-item text-right"><span class="pull-left">
-                    <strong>Počet hvězdiček:</strong></span>
-                {for $i=0; $i < $starRating; $i++}
-                <i class="fa fa-star" aria-hidden="true"></i>
-                {/for}
-                </li>
-            </ul>
-        </div><br>
-
-    </div>
-    <div class="col-sm-6">
-        <ul class="nav nav-stacked nav-pills" id="menuTabu">
-            <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#obecneUdaje">Obecné údaje</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#obrazky" >Obrázky</a>
-            </li>
-        </ul>
-        <script>
-            $(document).ready(function () {
-                $('#menuTabu a[href="#{{ old('tab') }}"]').tab('show')
-            });
-        </script>
-        <br>
-
-        <div class="tab-content">
-            <div class="tab-pane active" id="obecneUdaje" style="font-size: 18px;">
-                <div class="col-lg-8 col-md-12 col-sm-12 ">
-                    <h4><i class="fa fa-search" aria-hidden="true"></i> Popis</h4>
-                    <p style="text-align: justify;">{$description}</p>
-                    <hr>
-                    <h4 style="margin-top:15px;"><i class="fa fa-address-card" aria-hidden="true"></i> Adresa hotelu</h4>
-                    {$fullAddress}
-                    <hr>
-                    <h4 style="margin-top:15px;"><i class="fa fa-envelope" aria-hidden="true"></i> Email</h4>
-                    {$email}
-                    <hr>
-                    <h4 style="margin-top:15px;"><i class="fa fa-user-circle" aria-hidden="true"></i> Majitel</h4>
-                    {$owner->getFullName()}
-                    <hr>
-                    <h4 style="margin-top:15px;"><i class="fa fa-phone" aria-hidden="true"></i> Telefon</h4>
-                    {$phone}
-                </div>
-
-
-            </div>
-            <div class="tab-pane" id="obrazky">
-                {foreach $images as $imageID => $imagePath}
-                {if $iterator->first}
-                {else}
-                <img src="{$imagePath|dataStream}" width="350" style="min-height: 350px;" class="img-thumbnail" alt="profilovka">
-                {/if}
-
-
-                {/foreach}
-            </div>
+{block header}
+    <div class="row">
+        <div class="col-12 text-center" style="margin-top:20px;margin-bottom: 15px;"><h1>{$name}</h1>
+            <hr>
         </div>
     </div>
-</div>
+{/block}
+
+{block imageAddition}
+    <ul class="list-group" style="margin-top:15px;">
+        <li class="list-group-item text-right">
+            <span class="pull-left">
+                <strong>Počet hvězdiček:</strong>
+            </span>
+            <i n:for="$i = 0; $i < $starRating; $i++" class="fa fa-star" aria-hidden="true"></i>
+        </li>
+    </ul>
+    <a style="margin-top: 10px;" n:href="Room:default $hotelId" class="btn btn-primary">Seznam pokojů hotelu</a>
+    <a n:if="$user->getId() === $owner->getId() || $user->isInRole('admin')" style="margin-top: 10px;" n:href="Hotel:edit $hotelId" class="btn btn-primary">Editovat hotel</a>
+    <a style="margin-top: 10px;" n:href="Room:edit hotelId => $hotelId" n:if="$user->getId() === $owner->getId() || $user->isInRole('admin')" class="btn btn-primary">Přidat pokoj</a>
+{/block}
+
+{block body}
+    <div class="tab-pane active" id="obecneUdaje" style="font-size: 18px;">
+        <div class="col-lg-8 col-md-12 col-sm-12 ">
+            <h4><i class="fa fa-search" aria-hidden="true"></i> Popis</h4>
+            <p style="text-align: justify;">{$description}</p>
+            <hr>
+            <h4 style="margin-top:15px;"><i class="fa fa-address-card" aria-hidden="true"></i> Adresa hotelu</h4>
+            {$fullAddress}
+            <hr>
+            <h4 style="margin-top:15px;"><i class="fa fa-envelope" aria-hidden="true"></i> Email</h4>
+            {$email}
+            <hr>
+            <h4 style="margin-top:15px;"><i class="fa fa-phone" aria-hidden="true"></i> Telefon</h4>
+            {$phone}
+            <hr>
+            <h4 style="margin-top:15px;"><i class="fa fa-user-circle" aria-hidden="true"></i> Majitel</h4>
+            {$owner->getFullName()}<br>
+            Email: {$owner->getEmail()}<br>
+            Telefon: {$owner->getPhone()}
+        </div>
+    </div>
 {/block}

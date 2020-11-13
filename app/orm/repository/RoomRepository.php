@@ -119,6 +119,9 @@ class RoomRepository extends DataTableRepository
                 case ROOM_PRICE . '2':
                     $this->baseSelection->where(ROOM_PRICE . ' < ?', $filterValue);
                     break;
+                case HOTEL_ID:
+                    $this->baseSelection->where(ROOM_HOTEL_ID, $filterValue);
+                    break;
                 case ROOM_CAPACITY:
                     $this->baseSelection->where(ROOM_CAPACITY, $filterValue);
                     break;

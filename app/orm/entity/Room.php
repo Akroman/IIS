@@ -38,7 +38,7 @@ class Room extends BaseEntity
     /**
      * @return int
      */
-    public function getCapacity(): int
+    public function getCapacity(): ?int
     {
         return $this->get(ROOM_CAPACITY);
     }
@@ -47,7 +47,7 @@ class Room extends BaseEntity
     /**
      * @return float
      */
-    public function getPrice(): float
+    public function getPrice(): ?float
     {
         return $this->get(ROOM_PRICE);
     }
@@ -63,10 +63,19 @@ class Room extends BaseEntity
 
 
     /**
+     * @return Hotel
+     */
+    public function getHotel(): Hotel
+    {
+        return $this->getOneToOne('Hotel', TABLE_HOTELS, ROOM_HOTEL_ID);
+    }
+
+
+    /**
      * Vrací pole vybavení pokoje
      * @return array equipmentId => equipmentName
      */
-    public function getEquipment(): array
+    public function getEquipment(): ?array
     {
         if ($this->isNew()) {
             return [];
@@ -103,7 +112,7 @@ class Room extends BaseEntity
     /**
      * @return array
      */
-    public function getImagesPath(): array
+    public function getImagesPath(): ?array
     {
         return $this->record->related(TABLE_ROOM_IMAGES, IMAGE_ROOM_ID)
             ->fetchPairs(IMAGE_ID, IMAGE_PATH);

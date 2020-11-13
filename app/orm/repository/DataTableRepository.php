@@ -20,7 +20,7 @@ abstract class DataTableRepository extends BaseRepository
     protected $dataCollection;
 
     /** @var int */
-    protected static $imagesCount = 4;
+    protected static $imagesCount = 3;
 
     /** @var Selection */
     protected $baseSelection;

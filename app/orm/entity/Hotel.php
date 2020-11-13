@@ -21,7 +21,7 @@ class Hotel extends BaseEntity
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->get(HOTEL_NAME);
     }
@@ -48,7 +48,7 @@ class Hotel extends BaseEntity
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->get(HOTEL_DESCRIPTION);
     }
@@ -59,7 +59,9 @@ class Hotel extends BaseEntity
      */
     public function getFullAddress(): string
     {
-        return $this->get(HOTEL_ADDRESS) . ', ' . $this->get(HOTEL_CITY);
+        return $this->get(HOTEL_ADDRESS) && $this->get(HOTEL_CITY)
+            ? $this->get(HOTEL_ADDRESS) . ', ' . $this->get(HOTEL_CITY)
+            : $this->get(HOTEL_ADDRESS) . $this->get(HOTEL_CITY);
     }
 
 
@@ -75,7 +77,7 @@ class Hotel extends BaseEntity
     /**
      * @return array
      */
-    public function getImagesPath(): array
+    public function getImagesPath(): ?array
     {
         return $this->record->related(TABLE_HOTEL_IMAGES, IMAGE_HOTEL_ID)
             ->fetchPairs(IMAGE_ID, IMAGE_PATH);

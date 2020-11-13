@@ -61,7 +61,6 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
     {
         parent::startup();
         $this->loggedUser = $this->userRepository->getByID($this->getUser()->getId());
-        $this->template->loggedUser = $this->loggedUser;
     }
 
 

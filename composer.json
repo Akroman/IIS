@@ -1,6 +1,6 @@
 {
-	"name": "nette/web-project",
-	"description": "Nette: Standard Web Project",
+	"name": "Kataraz",
+	"description": "Information system for hotel management",
 	"keywords": ["nette"],
 	"type": "project",
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
@@ -23,7 +23,9 @@
 		"nextras/form-components": "^1.0",
 		"nextras/forms-rendering": "^1.0",
 		"kocicak/yetorm" : "^11.0",
-		"kdyby/forms-replicator": "^2.0"
+		"kdyby/forms-replicator": "^2.0",
+		"o5/grido": "^3.1",
+		"twbs/bootstrap": "4.5.3"
 	},
 	"require-dev": {
 		"nette/tester": "^2.0",

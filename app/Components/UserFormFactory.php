@@ -133,7 +133,7 @@ class UserFormFactory
         try {
             $this->user->setData($values);
             $this->userRepository->persist($this->user);
-            if ($this->isAdmin) {
+            if (!$this->user->isNew()) {
                 $this->presenter->flashMessage('Editace uživatele proběhla úspěšně', 'success');
             } else {
                 $this->presenter->flashMessage('Registrace proběhla úspěšně', 'success');
