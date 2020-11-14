@@ -18,8 +18,9 @@
         </li>
     </ul>
     <a style="margin-top: 10px;" n:href="Room:default $hotelId" class="btn btn-primary">Seznam pokojů hotelu</a>
-    <a n:if="$user->getId() === $owner->getId() || $user->isInRole('admin')" style="margin-top: 10px;" n:href="Hotel:edit $hotelId" class="btn btn-primary">Editovat hotel</a>
+    <a style="margin-top: 10px;" n:href="Hotel:edit $hotelId" n:if="$user->getId() === $owner->getId() || $user->isInRole('admin')" class="btn btn-primary">Editovat hotel</a>
     <a style="margin-top: 10px;" n:href="Room:edit hotelId => $hotelId" n:if="$user->getId() === $owner->getId() || $user->isInRole('admin')" class="btn btn-primary">Přidat pokoj</a>
+    <a style="margin-top: 10px;" n:href="Reservation:default hotelId => $hotelId" n:if="$userAllowedToViewReservations" class="btn btn-primary">Zobrazit rezervace hotelu</a>
 {/block}
 
 {block body}
@@ -39,8 +40,13 @@
             <hr>
             <h4 style="margin-top:15px;"><i class="fa fa-user-circle" aria-hidden="true"></i> Majitel</h4>
             {$owner->getFullName()}<br>
-            Email: {$owner->getEmail()}<br>
+            Email: {$owner->getEmailLink()}<br>
             Telefon: {$owner->getPhone()}
+            <hr>
+            <h4 style="margin-top:15px;"><i class="fa fa-user-circle" aria-hidden="true"></i> Recepční</h4>
+            {foreach $receptionists as $receptionist}
+                {$receptionist->getFullName()}<br>
+            {/foreach}
         </div>
     </div>
 {/block}

@@ -6,6 +6,7 @@ namespace App\Presenters;
 
 use HotelSystem\Components\DataTable;
 use HotelSystem\Model\Entity\Hotel;
+use HotelSystem\Model\Repository\UserRepository;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
@@ -24,7 +25,7 @@ class HotelPresenter extends BasePresenter
     {
         $this->hotel = $this->hotelRepository->getByID($hotelId);
         if (!$this->getUser()->isAllowed('hotel', 'edit')
-            && (!$this->getUser()->isInRole('Admin') || $this->hotel->getOwner()->getId() !== $this->getUser()->getId())) {
+            && (!$this->getUser()->isInRole(UserRepository::ROLE_ADMIN) || $this->hotel->isUserOwner($this->loggedUser))) {
             $this->error('Na tuto akci nemáte dostatečná oprávnění', IResponse::S403_FORBIDDEN);
         }
     }
@@ -52,6 +53,8 @@ class HotelPresenter extends BasePresenter
 
     public function renderView()
     {
+        $this->template->userAllowedToViewReservations = $this->hotel->isUserOwner($this->loggedUser)
+            || $this->hotel->isUserReceptionist($this->loggedUser) || $this->getUser()->isInRole(UserRepository::ROLE_ADMIN);
         $this->template->hotelId = $this->hotel->getId();
         $this->template->name = $this->hotel->getName();
         $this->template->description = $this->hotel->getDescription();
@@ -59,8 +62,9 @@ class HotelPresenter extends BasePresenter
         $this->template->fullAddress = $this->hotel->getFullAddress();
         $this->template->images = $this->hotel->getImages();
         $this->template->owner = $this->hotel->getOwner();
-        $this->template->email = $this->hotel->getEmail();
+        $this->template->email = $this->hotel->getEmailLink();
         $this->template->phone = $this->hotel->getPhone();
+        $this->template->receptionists = $this->hotel->getReceptionists();
     }
 
 
@@ -141,6 +145,17 @@ class HotelPresenter extends BasePresenter
             ->setHtmlAttribute('style', 'margin-bottom:15px;')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
+        $receptionists = $this->userRepository->getReceptionists();
+        if (array_key_exists($this->getUser()->getId(), $receptionists)) {
+            unset($receptionists[$this->getUser()->getId()]);
+        }
+
+        $form->addMultiSelect(HOTEL_RECEPTIONIST_ID, 'Recepční', $receptionists)
+            ->setDefaultValue($this->hotel->findReceptionists())
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
         $form->addMultiUpload(IMAGE_HOTEL_ID, 'Obrázky')
             ->setHtmlAttribute('class', 'btn btn-danger')
             ->setHtmlAttribute('style', 'margin-left:15px;margin-bottom:15px;');
@@ -167,6 +182,9 @@ class HotelPresenter extends BasePresenter
         try {
             $images = $values[IMAGE_HOTEL_ID];
             unset($values[IMAGE_HOTEL_ID]);
+            $this->hotel->setReceptionistsToInsert($values[HOTEL_RECEPTIONIST_ID]);
+            unset($values[HOTEL_RECEPTIONIST_ID]);
+
             $this->hotel->setOwner($this->loggedUser)
                 ->setData($values);
             $this->hotelRepository->persist($this->hotel);

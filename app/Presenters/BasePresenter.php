@@ -90,8 +90,6 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-
-
         $form->addSubmit('signin', 'Přihlásit')
             ->setHtmlAttribute('class', 'btn btn-dark btn-lg btn-block')
             ->setHtmlAttribute('style', 'margin-left:15px;');

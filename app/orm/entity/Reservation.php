@@ -43,7 +43,7 @@ class Reservation extends BaseEntity
      * @param DateTime $date
      * @return $this
      */
-    public function setDateFrom(DateTime $date): Reservation
+    public function setDateFrom(\DateTimeImmutable $date): Reservation
     {
         $this->set(RESERVATION_DATE_FROM, $date);
         return $this;
@@ -54,9 +54,114 @@ class Reservation extends BaseEntity
      * @param $date
      * @return $this
      */
-    public function setDateTo($date): Reservation
+    public function setDateTo(\DateTimeImmutable $date): Reservation
     {
         $this->set(RESERVATION_DATE_TO, $date);
+        return $this;
+    }
+
+
+    /**
+     * @return Room
+     */
+    public function getRoom(): Room
+    {
+        return $this->getOneToOne('Room', TABLE_ROOMS, ROOM_ID);
+    }
+
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->getOneToOne('User', TABLE_USERS, USER_ID);
+    }
+
+
+    /**
+     * @return DateTime
+     */
+    public function getDateFrom(): DateTime
+    {
+        return $this->get(RESERVATION_DATE_FROM);
+    }
+
+
+    /**
+     * @return DateTime
+     */
+    public function getDateTo(): DateTime
+    {
+        return $this->get(RESERVATION_DATE_TO);
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getLength(): int
+    {
+        return (int) $this->getDateTo()->diff($this->getDateFrom())->days;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isConfirmed(): bool
+    {
+        return (bool) $this->get(RESERVATION_CONFIRMED);
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isCheckedIn(): bool
+    {
+        return (bool) $this->get(RESERVATION_CHECK_IN);
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isCheckedOut(): bool
+    {
+        return (bool) $this->get(RESERVATION_CHECK_OUT);
+    }
+
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setConfirmed(bool $value): Reservation
+    {
+        $this->set(RESERVATION_CONFIRMED, $value);
+        return $this;
+    }
+
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function checkIn(bool $value): Reservation
+    {
+        $this->set(RESERVATION_CHECK_IN, $value);
+        return $this;
+    }
+
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function checkOut(bool $value): Reservation
+    {
+        $this->set(RESERVATION_CHECK_OUT, $value);
         return $this;
     }
 }

@@ -6,6 +6,7 @@ namespace App\Presenters;
 
 use HotelSystem\Components\DataTable;
 use HotelSystem\Model\Entity\Room;
+use HotelSystem\Model\Repository\UserRepository;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
@@ -29,7 +30,7 @@ class RoomPresenter extends BasePresenter
         $this->hotelId = $hotelId;
         $owner = $this->room->getHotel()->getOwner();
         if (!$this->getUser()->isAllowed('room', 'edit')
-            && (!$this->getUser()->isInRole('Admin') || $owner !== $this->getUser()->getId())) {
+            && (!$this->getUser()->isInRole(UserRepository::ROLE_ADMIN) || $owner !== $this->getUser()->getId())) {
             $this->error('Na tuto akci nemáte dostatečná práva', IResponse::S403_FORBIDDEN);
         }
     }
@@ -64,7 +65,8 @@ class RoomPresenter extends BasePresenter
     {
         $this->template->hotel = $this->room->getHotel()->getName();
         $this->template->roomId = $this->room->getId();
-        $this->template->isUserOwner = $this->room->getHotel()->getOwner()->getId() === $this->loggedUser->getId();
+        $this->template->isUserOwner = $this->room->getHotel()->isUserOwner($this->loggedUser);
+        $this->template->isUserReceptionist = $this->room->getHotel()->isUserReceptionist($this->loggedUser);
         $this->template->capacity = $this->room->getCapacity();
         $this->template->price = $this->room->getPrice();
         $this->template->type = $this->room->getTypeName();
@@ -123,7 +125,7 @@ class RoomPresenter extends BasePresenter
     {
         $form = new Form;
 
-        if ($this->getUser()->isInRole('admin')) {
+        if ($this->getUser()->isInRole(UserRepository::ROLE_ADMIN)) {
             $hotels = $this->hotelRepository->getTable()->fetchPairs(HOTEL_ID, HOTEL_NAME);
         } else {
             $hotels = $this->hotelRepository->getTable()

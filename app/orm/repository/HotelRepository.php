@@ -31,6 +31,25 @@ class HotelRepository extends DataTableRepository
         $this->transaction(function () use ($entity) {
             parent::persist($entity);
 
+            foreach ($entity->findReceptionists() as $receptionistId => $userId) {
+                if (!in_array($userId, $entity->getReceptionistsToInsert())) {
+                    $this->getTable(TABLE_HOTEL_RECEPTIONISTS)
+                        ->where(HOTEL_ID, $entity->getId())
+                        ->where(USER_ID, $userId)
+                        ->delete();
+                }
+            }
+
+            foreach ($entity->getReceptionistsToInsert() as $receptionistId) {
+                DatabaseUtils::insertOrUpdate($this->database, TABLE_HOTEL_RECEPTIONISTS, [
+                    HOTEL_ID => $entity->getId(),
+                    USER_ID => $receptionistId
+                ], [
+                    HOTEL_ID => $entity->getId(),
+                    USER_ID => $receptionistId
+                ]);
+            }
+
             foreach ($entity->getImagesToInsert() as $imagePath) {
                 DatabaseUtils::insertOrUpdate($this->database, TABLE_HOTEL_IMAGES, [
                     IMAGE_HOTEL_ID => $entity->getId(),

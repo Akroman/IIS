@@ -2,7 +2,8 @@
 
 {block header}{/block}
 {block imageAddition}
-    <a n:if="$isUserOwner || $user->isInRole('admin')" n:href="Room:edit $roomId" class="btn btn-primary">Editovat pokoj</a>
+    <a n:if="$isUserOwner || $user->isInRole(HotelSystem\Model\Repository\UserRepository::ROLE_ADMIN)" n:href="Room:edit $roomId" class="btn btn-primary">Editovat pokoj</a>
+    <a n:if="$isUserReceptionist || $user->isInRole(HotelSystem\Model\Repository\UserRepository::ROLE_ADMIN)" n:href="Reservation:default roomId => $roomId" class="btn btn-primary">Přehled rezervací pokoje</a>
 {/block}
 
 {block body}
@@ -22,6 +23,7 @@
             <hr>
             <h4 style="margin-top:15px;"><i class="fa fa-info-circle" aria-hidden="true"></i> Vybavení</h4>
             {$equipment}
+            <a style="margin-top: 10px;" n:href="Reservation:edit roomId => $roomId" class="btn btn-primary">Rezervovat pokoj</a>
         </div>
     </div>
 {/block}

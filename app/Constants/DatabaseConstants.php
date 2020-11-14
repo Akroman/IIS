@@ -34,6 +34,9 @@ define('HOTEL_PHONE',                         'hotel_phone');
 define('HOTEL_EMAIL',                         'hotel_email');
 define('HOTEL_OWNER_ID',                      'hotel_owner_id');
 
+define('TABLE_HOTEL_RECEPTIONISTS',           'hotel_receptionists');
+define('HOTEL_RECEPTIONIST_ID',               'hotel_receptionist_id');
+
 define('TABLE_HOTEL_IMAGES',                  'hotel_images');
 define('IMAGE_HOTEL_ID',                      'image_hotel_id');
 

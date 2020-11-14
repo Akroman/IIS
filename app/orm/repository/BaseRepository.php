@@ -7,6 +7,7 @@ namespace HotelSystem\Model\Repository;
 use HotelSystem\Model\Entity\BaseEntity;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\Selection;
 
 abstract class BaseRepository extends \YetORM\Repository
 {
@@ -26,7 +27,7 @@ abstract class BaseRepository extends \YetORM\Repository
      * @param mixed $id
      * @return BaseEntity|\YetORM\Entity|NULL
      */
-    public function getByID($id)
+    public function getByID($id): BaseEntity
     {
         $row = $this->getTable()->get($id);
         return $this->createEntity($row);
@@ -47,7 +48,7 @@ abstract class BaseRepository extends \YetORM\Repository
      * @param null $table
      * @return \Nette\Database\Table\Selection
      */
-    public function getTable($table = NULL)
+    public function getTable($table = NULL): Selection
     {
         return parent::getTable($table);
     }

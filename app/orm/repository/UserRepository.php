@@ -22,9 +22,14 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
      */
     const
         ROLE_CUSTOMER = 'Customer',
+        ROLE_CUSTOMER_ID = 1,
         ROLE_RECEPTIONIST = 'Receptionist',
+        ROLE_RECEPTIONIST_ID = 2,
         ROLE_OWNER = 'Owner',
-        ROLE_ADMIN = 'Admin';
+        ROLE_OWNER_ID = 3,
+        ROLE_ADMIN = 'Admin',
+        ROLE_ADMIN_ID = 4;
+
 
     /** @var Passwords */
     private $passwords;
@@ -95,10 +100,7 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
             if ($resource === 'user' && $privilege === 'overview') {
                 return TRUE;
             }
-        }
-
-        if ($role === self::ROLE_CUSTOMER || self::ROLE_RECEPTIONIST || self::ROLE_OWNER) {
-            if ($resource === 'reservation' && $privilege === 'view') {
+            if ($resource === 'user' && $privilege === 'view') {
                 return TRUE;
             }
         }
@@ -143,5 +145,18 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
                 ]);
             }
         });
+    }
+
+
+
+    public function getReceptionists(): array
+    {
+        return $this->getTable()
+            ->select(USER_ID . ', CONCAT_WS(" ", ' . USER_NAME . ', ' . USER_SURNAME . ') AS full_name')
+            ->where(USER_ID . ' IN ('
+                . ' SELECT ' . USER_ID
+                . ' FROM '   . TABLE_USER_ROLES
+                . ' WHERE '  . ROLE_ID . ' = ?)', self::ROLE_RECEPTIONIST_ID)
+            ->fetchPairs(USER_ID, 'full_name');
     }
 }

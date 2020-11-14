@@ -1,12 +1,32 @@
 {layout '../@dashboard.latte'}
 
+{block scripts}
+    {include parent}
+    <script type="text/javascript">
+        const dateFrom = $("input[name='reservation_date_from']");
+        const dateTo = $("input[name='reservation_date_to']");
+
+        $(document).ready(() => {
+            $("input[type='date']").change(() => {
+                $.nette.ajax({
+                    url: {link pickDate!},
+                    data: {'dateFrom': dateFrom.val(), 'dateTo': dateTo.val()},
+                    success: (payload) => {
+
+                    }
+                });
+            });
+        });
+    </script>
+{/block}
+
 {block content}
 <p style="margin-top:15px;"></p>
 <div style="margin-left:100px;margin-right:100px;padding-bottom:30px;padding-top:15px;">
     <center>
         <div class="col-lg-8 col-md-8 text-center" style="font-size: 30px;padding-bottom: 5px;padding-top:10px;">
             <div class="alert alert-primary" role="alert">
-                Přidání rezervace
+                Rezervace {$roomCapacity} lůžkového {$roomType} pokoje v hotelu {$hotel}
             </div>
         </div>
         {control reservationForm}

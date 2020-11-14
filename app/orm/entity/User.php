@@ -6,6 +6,7 @@ namespace HotelSystem\Model\Entity;
 
 use HotelSystem\Model\Repository\BaseRepository;
 use Nette\Database\Table\ActiveRow;
+use Nette\Utils\Html;
 
 class User extends BaseEntity
 {
@@ -58,6 +59,16 @@ class User extends BaseEntity
 
 
     /**
+     * @return Html
+     */
+    public function getEmailLink(): Html
+    {
+        return Html::el('a', ['href' => 'mailto:' . $this->getEmail()])
+            ->setText($this->getEmail());
+    }
+
+
+    /**
      * @return string
      */
     public function getPhone(): string
@@ -90,6 +101,15 @@ class User extends BaseEntity
                 ->fetch()[ROLE_ID];
         }
         return max(array_keys($this->getRoles()));
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getHighestRoleName(): string
+    {
+        return $this->getRoles()[$this->getHighestRole()];
     }
 
 
