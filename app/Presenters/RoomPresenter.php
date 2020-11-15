@@ -4,14 +4,17 @@
 namespace App\Presenters;
 
 
+use EventCalendar\Simple\SimpleCalendar;
 use HotelSystem\Components\DataTable;
 use HotelSystem\Model\Entity\Room;
 use HotelSystem\Model\Repository\UserRepository;
+use HotelSystem\Utils\ReservationCalendarEventModel;
 use Nette\Application\UI\Form;
 use Nette\Http\FileUpload;
 use Nette\Http\IResponse;
 use Nette\IOException;
 use Nette\Utils\FileSystem;
+use Nette\Utils\Html;
 use Nette\Utils\ImageException;
 
 class RoomPresenter extends BasePresenter
@@ -63,7 +66,9 @@ class RoomPresenter extends BasePresenter
 
     public function renderView()
     {
-        $this->template->hotel = $this->room->getHotel()->getName();
+        $this->template->roomNumber = $this->room->getNumber();
+        $this->template->hotelId = $this->room->getHotel()->getId();
+        $this->template->hotelName = $this->room->getHotel()->getName();
         $this->template->roomId = $this->room->getId();
         $this->template->isUserOwner = $this->room->getHotel()->isUserOwner($this->loggedUser);
         $this->template->isUserReceptionist = $this->room->getHotel()->isUserReceptionist($this->loggedUser);
@@ -72,6 +77,15 @@ class RoomPresenter extends BasePresenter
         $this->template->type = $this->room->getTypeName();
         $this->template->equipment = implode(', ', $this->room->getEquipment());
         $this->template->images = $this->room->getImages();
+    }
+
+
+
+    public function handleDeleteImage($imageId)
+    {
+        $this->roomRepository->getTable(TABLE_ROOM_IMAGES)->get($imageId)->delete();
+        $this->flashMessage('Obrázek smazán', 'success');
+        $this->redrawControl('images');
     }
 
 
@@ -113,6 +127,25 @@ class RoomPresenter extends BasePresenter
             ]
         ];
         return new DataTable($this->roomRepository, $filters);
+    }
+
+
+
+    protected function createComponentReservationCalendar(): SimpleCalendar
+    {
+        $calendar = new SimpleCalendar;
+        $calendar->setLanguage(SimpleCalendar::LANG_CZ);
+        $calendar->setFirstDay(SimpleCalendar::FIRST_MONDAY);
+        $calendar->setOptions([
+            SimpleCalendar::OPT_WDAY_MAX_LEN => 3,
+            SimpleCalendar::OPT_BOTTOM_NAV_NEXT => 'Další měsíc',
+            SimpleCalendar::OPT_BOTTOM_NAV_PREV => 'Předchozí měsíc',
+            SimpleCalendar::OPT_TOP_NAV_PREV => Html::el('span', ['class' => 'fa fa-arrow-left']),
+            SimpleCalendar::OPT_TOP_NAV_NEXT => Html::el('span', ['class' => 'fa fa-arrow-right'])
+        ]);
+        $calendar->setEvents(new ReservationCalendarEventModel($this->room));
+
+        return $calendar;
     }
 
 
@@ -161,6 +194,10 @@ class RoomPresenter extends BasePresenter
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
+        $form->addInteger(ROOM_NUMBER, 'Číslo pokoje')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
+            ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
         $form->setDefaults($this->room->getData());
 
         $form->addCheckboxList(EQUIPMENT_ID, 'Vybavení pokoje', $this->roomRepository->getEquipment())
@@ -175,8 +212,24 @@ class RoomPresenter extends BasePresenter
             ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
             ->setHtmlAttribute('style', 'margin-left:15px;');
         $form->onSuccess[] = [$this, 'onRoomFormSuccess'];
+        $form->onValidate[] = [$this, 'onRoomFormValidate'];
 
         return $form;
+    }
+
+
+    /**
+     * Validace formuláře pro vytvoření pokoje, zkontroluje unikátnost čísla pokoje v rámci daného hotelu
+     * @param Form $form
+     */
+    public function onRoomFormValidate(Form $form): void
+    {
+        $values = $form->getValues(TRUE);
+        $hotel = $this->hotelRepository->getByID($values[ROOM_HOTEL_ID]);
+
+        if ($hotel->hasRoomWithNumber($values[ROOM_NUMBER])) {
+            $form->addError('Číslo pokoje musí být unikátní v rámci hotelu');
+        }
     }
 
 

@@ -103,7 +103,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
                 } else {
                     $this->getUser()->setExpiration('+60 minutes', IUserStorage::CLEAR_IDENTITY);
                 }
-                $this->redirect('Homepage:dashboard');
+                $this->redirect('Homepage:default');
             } catch (AuthenticationException $exception) {
                 $form->addError($exception->getMessage());
             }
@@ -128,7 +128,7 @@ abstract class BasePresenter extends \Nette\Application\UI\Presenter
             if ($this->getUser()->isLoggedIn()) {
                 $this->getUser()->logout(TRUE);
             }
-            $this->redirect('Homepage:welcome');
+            $this->redirect('Homepage:default');
         };
         return $form;
     }

@@ -64,6 +64,7 @@ class UserPresenter extends BasePresenter
 
     public function renderView()
     {
+        $this->template->userId = $this->viewedUser->getId();
         $this->template->userName = $this->viewedUser->getFullName();
         $this->template->email = $this->viewedUser->getEmailLink();
         $this->template->phone = $this->viewedUser->getPhone();
@@ -112,7 +113,7 @@ class UserPresenter extends BasePresenter
             })
                 ->setCustomRender(function (ActiveRow $row, Html $el) {
                     $el->class[] = 'btn btn-danger';
-                    $el->style[] = 'margin: 10px;';
+                    $el->style[] = 'margin: 5px;';
                     $el->title = 'Smazat';
                     return $el->addHtml(Html::el('span', ['class' => 'fa fa-trash']));
                 });
@@ -125,7 +126,7 @@ class UserPresenter extends BasePresenter
                 })
                 ->setCustomRender(function (ActiveRow $row, Html $el) {
                     $el->class[] = 'btn btn-primary';
-                    $el->style[] = 'margin: 10px;';
+                    $el->style[] = 'margin: 5px;';
                     $el->title = 'Upravit';
                     return $el->addHtml(Html::el('span', ['class' => 'fa fa-edit']));
                 });
@@ -137,7 +138,7 @@ class UserPresenter extends BasePresenter
             })
             ->setCustomRender(function (ActiveRow $row, Html $el) {
                 $el->class[] = 'btn';
-                $el->style[] = 'margin: 10px;';
+                $el->style[] = 'margin: 5px;';
                 $el->title = 'Zobrazit';
                 return $el->addHtml(Html::el('span', ['class' => 'fa fa-eye']));
             });

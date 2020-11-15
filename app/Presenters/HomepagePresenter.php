@@ -9,5 +9,8 @@ use Nette;
 
 class HomepagePresenter extends BasePresenter
 {
-
+    public function renderDefault()
+    {
+        $this->template->rooms = $this->roomRepository->getRandomRooms();
+    }
 }

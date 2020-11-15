@@ -1,19 +1,15 @@
-{*
- * Komponenta pro stránkování, může být klidně umístěna i pod tabulkou
- * ve VisualPaginator.latte lze změnit její vzhled
- *}
-{snippet paginator}
-    {control visualPaginator}
-{/snippet}
-
 <div class="col-lg-12 col-md-12 text-center" style="font-size: 30px;padding-bottom: 5px;padding-top:10px;">
     <div class="alert alert-info" role="alert">
         {$title}
     </div>
 </div>
 
+{snippet paginator}
+    {control visualPaginator}
+{/snippet}
+
 <div style="display: flex; flex-direction: row">
-    <div class="col-2" style="min-height: 100vh; display: flex; align-items: center;">
+    <div n:snippet="filter" class="col-2" style="min-height: 100vh; display: flex; align-items: center;">
         {control filters}
     </div>
 
@@ -33,17 +29,5 @@
             </div>
             <p class="text-muted text-center">{$result['description']|breaklines}</p>
         </div>
-        {*
-         * Zde bude vykreslování jednotlivých položek (hotely nebo pokoje)
-         * $result je pole s prvky 'title', 'description' a 'images'
-         * kde 'images' je pole ve tvaru imageID => imagePath
-         * $resultId je ID entity, slouží pro vygenerování linku na view šablonu dané entity
-         *}
     </div>
 </div>
-{*
- * Komponenta s filtry
- *}
-<center>
-    <p style="padding-bottom:50px;"></p>
-</center>

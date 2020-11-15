@@ -9,6 +9,7 @@ use HotelSystem\Model\Repository\HotelRepository;
 use HotelSystem\Model\Repository\RoomRepository;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\SubmitButton;
 use Nette\InvalidArgumentException;
 
 class DataTable extends Control
@@ -31,7 +32,7 @@ class DataTable extends Control
 
 
 
-    public function __construct(DataTableRepository $repository, array $filters = [], int $itemsPerPage = 20)
+    public function __construct(DataTableRepository $repository, array $filters = [], int $itemsPerPage = 50)
     {
         $this->repository = $repository;
         $this->itemsPerPage = $itemsPerPage;
@@ -104,6 +105,13 @@ class DataTable extends Control
     {
         $form = new Form;
 
+        $form->addSubmit('cancel', 'Zrušit filtry')
+            ->setHtmlAttribute('class', 'btn btn-danger btn-lg btn-block')
+            ->setHtmlAttribute('style', 'margin-left:15px; margin-bottom: 10px;')
+            ->onClick[] = function (SubmitButton $button) {
+            $this->presenter->redirect('this');
+        };
+
         foreach ($this->filters as $filterProperties) {
             switch ($filterProperties['type']) {
                 case self::CHECKBOX_LIST_FILTER:
@@ -143,10 +151,10 @@ class DataTable extends Control
         }
 
         $form->addSubmit('send', 'Filtrovat')
-            ->setHtmlAttribute('class', 'btn btn-danger btn-lg btn-block')
-            ->setHtmlAttribute('style', 'margin-left:15px;');
-        $form->onSuccess[] = function (Form $form) {
-            $values = $form->getValues(TRUE);
+            ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block')
+            ->setHtmlAttribute('style', 'margin-left:15px;')
+            ->onClick[] = function (SubmitButton $button) {
+            $values = $button->getForm()->getValues(TRUE);
             $results = $this->getResultsArray(array_filter($values));
 
             $this['visualPaginator']->getPaginator()->setItemCount(count($results));

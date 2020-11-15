@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1:3306
--- Vytvořeno: Pon 02. lis 2020, 15:21
+-- Vytvořeno: Ned 15. lis 2020, 15:31
 -- Verze serveru: 5.7.31
 -- Verze PHP: 7.4.9
 
@@ -32,7 +32,22 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `equipment_id` int(11) NOT NULL AUTO_INCREMENT,
   `equipment_name` varchar(255) NOT NULL,
   PRIMARY KEY (`equipment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+--
+-- Vypisuji data pro tabulku `equipment`
+--
+
+INSERT INTO `equipment` (`equipment_id`, `equipment_name`) VALUES
+(1, 'Wi-Fi'),
+(2, 'Televize'),
+(3, 'Balkón'),
+(4, 'Sprchový kout'),
+(5, 'Vana'),
+(6, 'Umyvadlo'),
+(7, 'Toaleta'),
+(8, 'Stůl'),
+(9, 'Židle');
 
 -- --------------------------------------------------------
 
@@ -53,7 +68,38 @@ CREATE TABLE IF NOT EXISTS `hotel` (
   `hotel_owner_id` int(11) NOT NULL,
   PRIMARY KEY (`hotel_id`),
   KEY `hotel_owner_id_fk` (`hotel_owner_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `hotel_images`
+--
+
+DROP TABLE IF EXISTS `hotel_images`;
+CREATE TABLE IF NOT EXISTS `hotel_images` (
+  `image_id` int(11) NOT NULL AUTO_INCREMENT,
+  `image_hotel_id` int(11) NOT NULL,
+  `image_path` varchar(255) NOT NULL,
+  PRIMARY KEY (`image_id`),
+  KEY `image_hotel_id_fk` (`image_hotel_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabulky `hotel_receptionists`
+--
+
+DROP TABLE IF EXISTS `hotel_receptionists`;
+CREATE TABLE IF NOT EXISTS `hotel_receptionists` (
+  `hotel_receptionist_id` int(11) NOT NULL AUTO_INCREMENT,
+  `hotel_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`hotel_receptionist_id`),
+  KEY `hotel_receptionist_id_fk` (`hotel_id`),
+  KEY `receptionist_id_fk` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -68,13 +114,13 @@ CREATE TABLE IF NOT EXISTS `reservations` (
   `user_id` int(11) NOT NULL,
   `reservation_date_from` datetime NOT NULL,
   `reservation_date_to` datetime NOT NULL,
-  `reservation_confirmed` tinyint(4) NOT NULL,
-  `reservation_check_in` tinyint(4) NOT NULL,
-  `reservation_check_out` tinyint(4) NOT NULL,
+  `reservation_confirmed` tinyint(4) NOT NULL DEFAULT '0',
+  `reservation_check_in` tinyint(4) NOT NULL DEFAULT '0',
+  `reservation_check_out` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`reservation_id`),
   KEY `user_id_fk` (`user_id`),
   KEY `room_reservation_id_fk` (`room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -112,9 +158,10 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   `room_capacity` tinyint(4) NOT NULL,
   `room_price` double NOT NULL,
   `room_type` int(11) NOT NULL,
+  `room_number` int(11) DEFAULT NULL,
   PRIMARY KEY (`room_id`),
   KEY `hotel_id_fk` (`room_hotel_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -130,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `room_equipment` (
   PRIMARY KEY (`room_equipment_id`),
   KEY `room_id_fk` (`room_id`),
   KEY `equipment_id_fk` (`equipment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -145,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `room_images` (
   `image_path` varchar(255) NOT NULL,
   PRIMARY KEY (`image_id`),
   KEY `image_room_id_fk` (`image_room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -162,16 +209,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_phone` varchar(20) NOT NULL,
   `user_login` varchar(255) NOT NULL,
   `user_password` varchar(255) NOT NULL,
-  `user_registered_date` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 --
 -- Vypisuji data pro tabulku `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_name`, `user_surname`, `user_email`, `user_phone`, `user_login`, `user_password`, `user_registered_date`) VALUES
-(7, 'admin', 'admin', 'mrda.me.fit@vutbr.cz', '798498614', 'admin', '$2y$10$PARlJtMUFdiCUPhe4WCj6.O8q/.iWUJIXyaaoHcFpL3t3SR2AgDBq', NULL);
+INSERT INTO `users` (`user_id`, `user_name`, `user_surname`, `user_email`, `user_phone`, `user_login`, `user_password`) VALUES
+(7, 'Administrátor', 'Administrátovský', 'example@example.com', '798498614', 'admin', '$2y$10$GZtLeENj7NfbSby.tV8boudc4dbZZCWg0ZnubThl1cMmuIiZyEiUm');
 
 -- --------------------------------------------------------
 
@@ -187,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   PRIMARY KEY (`user_role_id`),
   KEY `role_id_fk` (`role_id`),
   KEY `user_role_id_fk` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 --
 -- Vypisuji data pro tabulku `user_roles`
@@ -208,6 +254,19 @@ INSERT INTO `user_roles` (`user_role_id`, `user_id`, `role_id`) VALUES
 --
 ALTER TABLE `hotel`
   ADD CONSTRAINT `hotel_owner_id_fk` FOREIGN KEY (`hotel_owner_id`) REFERENCES `users` (`user_id`) ON UPDATE CASCADE;
+
+--
+-- Omezení pro tabulku `hotel_images`
+--
+ALTER TABLE `hotel_images`
+  ADD CONSTRAINT `image_hotel_id_fk` FOREIGN KEY (`image_hotel_id`) REFERENCES `hotel` (`hotel_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Omezení pro tabulku `hotel_receptionists`
+--
+ALTER TABLE `hotel_receptionists`
+  ADD CONSTRAINT `hotel_receptionist_id_fk` FOREIGN KEY (`hotel_id`) REFERENCES `hotel` (`hotel_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `receptionist_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Omezení pro tabulku `reservations`
@@ -246,31 +305,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-INSERT INTO `equipment` (`equipment_id`, `equipment_name`) VALUES
-(1, 'Wi-Fi'),
-(2, 'Televize'),
-(3, 'Balkón'),
-(4, 'Sprchový kout'),
-(5, 'Vana'),
-(6, 'Umyvadlo'),
-(7, 'Toaleta'),
-(8, 'Stůl'),
-(9, 'Židle');
-
-
-CREATE TABLE `hotel_images` (
-    `image_id` INT NOT NULL AUTO_INCREMENT,
-    `image_hotel_id` INT NOT NULL,
-    `image_path` VARCHAR(255) NOT NULL,
-    PRIMARY KEY (`image_id`)
-) ENGINE = InnoDB;
-ALTER TABLE `hotel_images` ADD CONSTRAINT `image_hotel_id_fk` FOREIGN KEY (`image_hotel_id`) REFERENCES `hotel`(`hotel_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-
-CREATE TABLE `hotel_owners` (
-    `hotel_owner_id` INT NOT NULL AUTO_INCREMENT,
-    `hotel_id` INT NOT NULL,
-    `user_id` INT NOT NULL,
-    PRIMARY KEY (`hotel_owner_id`)
-) ENGINE = InnoDB;

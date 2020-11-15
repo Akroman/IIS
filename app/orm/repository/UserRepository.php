@@ -148,7 +148,9 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getReceptionists(): array
     {
         return $this->getTable()

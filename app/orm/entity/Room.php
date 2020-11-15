@@ -6,6 +6,7 @@ namespace HotelSystem\Model\Entity;
 
 use HotelSystem\Model\Repository\BaseRepository;
 use Nette\Database\Table\ActiveRow;
+use Nette\Utils\DateTime;
 
 class Room extends BaseEntity
 {
@@ -63,11 +64,48 @@ class Room extends BaseEntity
 
 
     /**
+     * @return int
+     */
+    public function getNumber(): ?int
+    {
+        return $this->get(ROOM_NUMBER);
+    }
+
+
+    /**
      * @return Hotel
      */
     public function getHotel(): Hotel
     {
         return $this->getOneToOne('Hotel', TABLE_HOTELS, ROOM_HOTEL_ID);
+    }
+
+
+    /**
+     * @return BaseEntityCollection
+     */
+    public function getReservations(): BaseEntityCollection
+    {
+        return new BaseEntityCollection(
+            $this->record->related(TABLE_RESERVATIONS, ROOM_ID),
+            '\HotelSystem\Model\Entity\Reservation',
+            $this->repository
+        );
+    }
+
+
+    /**
+     * @param $start
+     * @param $end
+     * @return bool
+     */
+    public function reservationExistInInterval($start, $end): bool
+    {
+        return $this->record->related(TABLE_RESERVATIONS, ROOM_ID)
+                ->where('(' . RESERVATION_DATE_FROM . ' <= ? AND ' . RESERVATION_DATE_FROM . ' >= ?) OR '
+                . '(' . RESERVATION_DATE_TO . ' <= ? AND ' . RESERVATION_DATE_TO . ' >= ?) OR '
+                . '(' . RESERVATION_DATE_FROM . ' <= ? AND ' . RESERVATION_DATE_TO . ' >= ?)', $end, $start, $end, $start, $start, $end)
+                ->count('*') > 0;
     }
 
 

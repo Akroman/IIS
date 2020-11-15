@@ -4,6 +4,7 @@
 namespace App\Presenters;
 
 
+use EventCalendar\Simple\SimpleCalendar;
 use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Grido\Translations\FileTranslator;
@@ -12,6 +13,7 @@ use HotelSystem\Model\Entity\Hotel;
 use HotelSystem\Model\Entity\Reservation;
 use HotelSystem\Model\Entity\Room;
 use HotelSystem\Model\Repository\UserRepository;
+use HotelSystem\Utils\ReservationCalendarEventModel;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
@@ -41,7 +43,16 @@ class ReservationPresenter extends BasePresenter
     }
 
 
-
+    /**
+     * Action metoda pro vyrenderování přehledu rezervací,
+     * kontroluje se, zda se vykresluje pro uživatele, pokoj nebo celý hotel,
+     * podle toho bude vypadat Selection pro Grido komponentu,
+     * zároveň zde pro každou větev probíhá kontrola práv (uživatel si nemůže prohlížet rezervace cizího hotelu atd.)
+     * @param null $userId
+     * @param null $roomId
+     * @param null $hotelId
+     * @throws \Nette\Application\BadRequestException
+     */
     public function actionDefault($userId = NULL, $roomId = NULL, $hotelId = NULL)
     {
         $this->reservationSelection = $this->reservationRepository->getTable();
@@ -114,11 +125,25 @@ class ReservationPresenter extends BasePresenter
     }
 
 
-
-    public function handlePickDate($dateFrom, $dateTo)
+    /**
+     * Kalendář zobrazující obsazenost pokoje
+     * @return SimpleCalendar
+     */
+    protected function createComponentReservationCalendar(): SimpleCalendar
     {
-        \Tracy\Debugger::barDump($dateFrom);
-        \Tracy\Debugger::barDump($dateTo);
+        $calendar = new SimpleCalendar;
+        $calendar->setLanguage(SimpleCalendar::LANG_CZ);
+        $calendar->setFirstDay(SimpleCalendar::FIRST_MONDAY);
+        $calendar->setOptions([
+            SimpleCalendar::OPT_WDAY_MAX_LEN => 3,
+            SimpleCalendar::OPT_BOTTOM_NAV_NEXT => 'Další měsíc',
+            SimpleCalendar::OPT_BOTTOM_NAV_PREV => 'Předchozí měsíc',
+            SimpleCalendar::OPT_TOP_NAV_PREV => Html::el('span', ['class' => 'fa fa-arrow-left']),
+            SimpleCalendar::OPT_TOP_NAV_NEXT => Html::el('span', ['class' => 'fa fa-arrow-right'])
+        ]);
+        $calendar->setEvents(new ReservationCalendarEventModel($this->room));
+
+        return $calendar;
     }
 
 
@@ -145,6 +170,7 @@ class ReservationPresenter extends BasePresenter
             ->setHtmlAttribute('class', 'btn btn-primary btn-lg btn-block');
 
         $form->onSuccess[] = [$this, 'onReservationFormSuccess'];
+        $form->onValidate[] = [$this, 'onReservationFormValidate'];
 
         return $form;
     }
@@ -171,8 +197,31 @@ class ReservationPresenter extends BasePresenter
     }
 
 
+    /**
+     * Validace formuláře, rezervace na jeden pokoj se nemohou překrývat,
+     * datum začátku rezervace musí být větší než datum konce rezervace
+     * @param Form $form
+     */
+    public function onReservationFormValidate(Form $form): void
+    {
+        $values = $form->getValues(TRUE);
 
-    protected function createComponentReservationsGrid()
+        if ($this->room->reservationExistInInterval($values[RESERVATION_DATE_FROM], $values[RESERVATION_DATE_TO])) {
+            $form->addError('Je nám líto, ale Vámi vybrané dny jsou již rezervované.');
+        }
+
+        if ($values[RESERVATION_DATE_TO] < $values[RESERVATION_DATE_FROM]) {
+            $form->addError('Datum od musí být větší než datum do');
+        }
+    }
+
+
+    /**
+     * Komponenta pro vytvoření tabulky s rezervacemi
+     * @return Grid
+     * @throws \Grido\Exception
+     */
+    protected function createComponentReservationsGrid(): Grid
     {
         $grid = new Grid($this, 'reservationsGrid');
         $grid->setModel($this->reservationSelection)
@@ -205,7 +254,19 @@ class ReservationPresenter extends BasePresenter
                 return $source;
             });
 
+        $grid->addColumnLink(ROOM_ID, 'Číslo pokoje')
+            ->setCustomRender(function (ActiveRow $row) {
+                $room = $this->reservationRepository->getByID($row[RESERVATION_ID])->getRoom();
+                return Html::el('a', [
+                    'href' => $this->link('Room:view', ['roomId' => $room->getId()])
+                ])
+                    ->setText($room->getNumber());
+            });
+
         if ($this->getUser()->isInRole(UserRepository::ROLE_RECEPTIONIST)) {
+            $users = $this->userRepository->getTable()
+                ->select(USER_ID . ', CONCAT_WS(" ", ' . USER_NAME . ', ' . USER_SURNAME.') AS full_name')
+                ->fetchPairs(USER_ID, 'full_name');
             $grid->addColumnLink(USER_ID, 'Uživatel')
                 ->setCustomRender(function (ActiveRow $row) {
                     $user = $this->reservationRepository->getByID($row[RESERVATION_ID])->getUser();
@@ -213,6 +274,13 @@ class ReservationPresenter extends BasePresenter
                         'href' => $this->link('User:view', ['userId' => $user->getId()])
                     ])
                         ->setText($user->getFullName());
+                })
+                ->setFilterSelect([0 => '- Všichni -'] + $users)
+                ->setWhere(function ($value, Selection $source) {
+                    if ($value != 0) {
+                        $source->where(USER_ID, $value);
+                    }
+                    return $source;
                 });
         }
 
@@ -272,7 +340,7 @@ class ReservationPresenter extends BasePresenter
             })
                 ->setCustomRender(function (ActiveRow $row, Html $el) {
                     $el->class[] = 'btn btn-primary';
-                    $el->style[] = 'margin: 5px;';
+                    $el->style[] = 'margin: 2.5px;';
                     $el->title = 'Potvrdit';
                     return $el->addHtml(Html::el('span', ['class' => 'fa fa-check']));
                 });
@@ -290,7 +358,7 @@ class ReservationPresenter extends BasePresenter
             })
                 ->setCustomRender(function (ActiveRow $row, Html $el) {
                     $el->class[] = 'btn btn-primary';
-                    $el->style[] = 'margin: 5px;';
+                    $el->style[] = 'margin: 2.5px;';
                     $el->title = 'Check in';
                     return $el->addHtml(Html::el('span', ['class' => 'fa fa-sign-in']));
                 });
@@ -308,7 +376,7 @@ class ReservationPresenter extends BasePresenter
             })
                 ->setCustomRender(function (ActiveRow $row, Html $el) {
                     $el->class[] = 'btn btn-primary';
-                    $el->style[] = 'margin: 5px;';
+                    $el->style[] = 'margin: 2.5px;';
                     $el->title = 'Check out';
                     return $el->addHtml(Html::el('span', ['class' => 'fa fa-sign-out']));
                 });

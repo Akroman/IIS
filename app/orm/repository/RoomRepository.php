@@ -4,11 +4,11 @@
 namespace HotelSystem\Model\Repository;
 
 
+use HotelSystem\Model\Entity\BaseEntityCollection;
 use HotelSystem\Model\Entity\Room;
 use HotelSystem\Utils\DatabaseUtils;
 use Nette\Database\Context as NdbContext;
 use Nette\InvalidArgumentException;
-use Nette\Utils\Image;
 use YetORM\Entity;
 
 class RoomRepository extends DataTableRepository
@@ -28,6 +28,20 @@ class RoomRepository extends DataTableRepository
     {
         return array_map(function (string $equipmentName) { return ' ' . $equipmentName; },
             $this->getTable(TABLE_EQUIPMENT)->fetchPairs(EQUIPMENT_ID, EQUIPMENT_NAME));
+    }
+
+
+    /**
+     * @param int $limit
+     * @return BaseEntityCollection
+     */
+    public function getRandomRooms(int $limit = 5): BaseEntityCollection
+    {
+        return new BaseEntityCollection(
+            $this->getTable()->order('RAND()')->limit($limit),
+            '\HotelSystem\Model\Entity\Room',
+            $this
+        );
     }
 
 
@@ -95,8 +109,8 @@ class RoomRepository extends DataTableRepository
             array_map(function (Room $room) { return $room->getId(); }, $this->dataCollection),
             array_map(function (Room $room) {
                 return [
-                    'title' => 'Pokoj ' . $room->getCapacity() . ' lůžkový',
-                    'description' => 'Cena: ' . $room->getPrice() . PHP_EOL
+                    'title' => 'Pokoj ' . $room->getCapacity() . ' lůžkový hotel ' . $room->getHotel()->getName(),
+                    'description' => 'Cena: ' . $room->getPrice() . ' Kč' . PHP_EOL
                         . 'Vybavení: ' . implode(', ', $room->getEquipment()),
                     'images' => array_slice($room->getImages(), 0, self::$imagesCount)
                 ];

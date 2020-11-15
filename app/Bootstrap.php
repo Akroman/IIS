@@ -1,13 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App;
 
 use Nette\Configurator;
 use Nette\Forms\Container;
-use Nextras\Forms\Controls;
-use Nextras\FormComponents;
+use Nextras\FormComponents\Controls;
 
 require_once __DIR__ . '/Constants/DatabaseConstants.php';
 require_once __DIR__ . '/Constants/Paths.php';
@@ -27,6 +24,7 @@ class Bootstrap
 
 		$configurator->createRobotLoader()
 			->addDirectory(__DIR__)
+            ->addDirectory(__DIR__ . '/../vendor/konecnyjakub')
 			->register();
 
 		$configurator->addConfig(__DIR__ . '/config/common.neon');
@@ -34,20 +32,14 @@ class Bootstrap
 
         $container = $configurator->createContainer();
 
-        Container::extensionMethod('addOptionList', function (Container $container, $name, $label = NULL, array $items = NULL) {
-            return $container[$name] = new Controls\OptionList($label, $items);
-        });
-        Container::extensionMethod('addMultiOptionList', function (Container $container, $name, $label = NULL, array $items = NULL) {
-            return $container[$name] = new Controls\MultiOptionList($label, $items);
-        });
         Container::extensionMethod('addDatePicker', function (Container $container, $name, $label = NULL) {
-            return $container[$name] = new FormComponents\Controls\DateControl($label);
+            return $container[$name] = new Controls\DateControl($label);
         });
         Container::extensionMethod('addDateTimePicker', function (Container $container, $name, $label = NULL) {
-            return $container[$name] = new FormComponents\Controls\DateTimeControl($label);
+            return $container[$name] = new Controls\DateTimeControl($label);
         });
-        Container::extensionMethod('addTypeahead', function(Container $container, $name, $label = NULL, $callback = NULL) {
-            return $container[$name] = new Controls\Typeahead($label, $callback);
+        Container::extensionMethod('addAutoComplete', function(Container $container, $name, $label = NULL, $callback = NULL) {
+            return $container[$name] = new Controls\AutocompleteControl($label, $callback);
         });
 
         \Kdyby\Replicator\Container::register();

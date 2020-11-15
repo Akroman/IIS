@@ -100,7 +100,9 @@ class Hotel extends BaseEntity
     }
 
 
-
+    /**
+     * @return array
+     */
     public function findReceptionists(): array
     {
         if ($this->isNew()) {
@@ -111,7 +113,9 @@ class Hotel extends BaseEntity
     }
 
 
-
+    /**
+     * @return BaseEntityCollection
+     */
     public function getReceptionists(): BaseEntityCollection
     {
         $receptionistsIds = $this->findReceptionists();
@@ -125,7 +129,10 @@ class Hotel extends BaseEntity
     }
 
 
-
+    /**
+     * @param array $receptionists
+     * @return $this
+     */
     public function setReceptionistsToInsert(array $receptionists): Hotel
     {
         $this->receptionistsToInsert = $receptionists;
@@ -133,7 +140,9 @@ class Hotel extends BaseEntity
     }
 
 
-
+    /**
+     * @return array
+     */
     public function getReceptionistsToInsert(): array
     {
         return $this->receptionistsToInsert;
@@ -160,16 +169,34 @@ class Hotel extends BaseEntity
     }
 
 
-
+    /**
+     * @param User $user
+     * @return bool
+     */
     public function isUserOwner(User $user): bool
     {
         return $this->getOwner()->getId() === $user->getId();
     }
 
 
-
+    /**
+     * @param User $user
+     * @return bool
+     */
     public function isUserReceptionist(User $user): bool
     {
         return in_array($user->getId(), $this->findReceptionists());
+    }
+
+
+    /**
+     * @param int $number
+     * @return bool
+     */
+    public function hasRoomWithNumber(int $number): bool
+    {
+        return $this->record->related(TABLE_ROOMS, ROOM_HOTEL_ID)
+            ->where(ROOM_NUMBER, $number)
+            ->count('*') > 0;
     }
 }

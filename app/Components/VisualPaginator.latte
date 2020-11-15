@@ -8,11 +8,11 @@
 <nav>
     <ul class="pagination">
             {if $paginator->isFirst()}
-                <li class="disabled"><a href="#"><span class="glyphicon glyphicon-menu-left"></span></a></li>
+                <li class="disabled"><a href="#"><span class="fa fa-arrow-left"></span></a></li>
             {else}
                 <li>
                     <a href="{link $link, 'page' => $paginator->page - 1}" n:class="$ajax ? ajax">
-                        <span class="glyphicon glyphicon-menu-left"></span>
+                        <span class="fa fa-arrow-left"></span>
                     </a>
                 </li>
             {/if}
@@ -27,11 +27,11 @@
             {/foreach}
 
             {if $paginator->isLast()}
-                <li class="disabled"><a href="#"><span class="glyphicon glyphicon-menu-right"></span></a></li>
+                <li class=""><a href="#"><span class="fa fa-arrow-right"></span></a></li>
             {else}
                 <li>
                     <a href="{link $link, 'page' => $paginator->page + 1}" n:class="$ajax ? ajax">
-                        <span class="glyphicon glyphicon-menu-right"></span>
+                        <span class="fa fa-arrow-right"></span>
                     </a>
                 </li>
             {/if}

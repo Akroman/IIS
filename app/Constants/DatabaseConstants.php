@@ -17,6 +17,7 @@ define('ROOM_HOTEL_ID',                       'room_hotel_id');
 define('ROOM_CAPACITY',                       'room_capacity');
 define('ROOM_PRICE',                          'room_price');
 define('ROOM_TYPE',                           'room_type');
+define('ROOM_NUMBER',                         'room_number');
 
 define('TABLE_ROOM_IMAGES',                   'room_images');
 define('IMAGE_ID',                            'image_id');

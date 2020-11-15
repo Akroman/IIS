@@ -164,4 +164,34 @@ class Reservation extends BaseEntity
         $this->set(RESERVATION_CHECK_OUT, $value);
         return $this;
     }
+
+
+    /**
+     * Vrátí pole objektů DateTime obsahující všechny datumy rezervace
+     * @return array
+     */
+    public function getDates(): array
+    {
+        $from = clone $this->getDateFrom();
+        $to = clone $this->getDateTo();
+
+        do {
+            $dates[] = clone $from;
+            $from->modify('+1 day');
+        } while ($from->getTimestamp() <= $to->getTimestamp());
+        return $dates;
+    }
+
+
+    /**
+     * Zjistí, jestli je zadané datum v rozsahu této rezervace
+     * @param DateTime $dateFor
+     * @return bool
+     */
+    public function isForDate(DateTime $dateFor): bool
+    {
+        return !empty(array_filter($this->getDates(), function (DateTime $date) use ($dateFor) {
+            return $date->getTimestamp() === $dateFor->getTimestamp();
+        }));
+    }
 }

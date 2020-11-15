@@ -3,13 +3,13 @@
 {block scripts}
     {include parent}
     <script type="text/javascript">
-        const dateFrom = $("input[name='reservation_date_from']");
-        const dateTo = $("input[name='reservation_date_to']");
-
+        /*
         $(document).ready(() => {
+            const dateFrom = $("input[name='reservation_date_from']");
+            const dateTo = $("input[name='reservation_date_to']");
             $("input[type='date']").change(() => {
                 $.nette.ajax({
-                    url: {link pickDate!},
+                    url: ,
                     data: {'dateFrom': dateFrom.val(), 'dateTo': dateTo.val()},
                     success: (payload) => {
 
@@ -17,6 +17,7 @@
                 });
             });
         });
+        */
     </script>
 {/block}
 
@@ -31,5 +32,9 @@
         </div>
         {control reservationForm}
     </center>
+    <div style="text-align: center; margin: 10px;">
+        <h4>Dostupnost pokoje</h4>
+        {control reservationCalendar}
+    </div>
 </div>
 {/block}
