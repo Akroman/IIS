@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1:3306
--- Vytvořeno: Ned 15. lis 2020, 15:31
+-- Vytvořeno: Pon 16. lis 2020, 00:33
 -- Verze serveru: 5.7.31
 -- Verze PHP: 7.4.9
 
@@ -111,16 +111,20 @@ DROP TABLE IF EXISTS `reservations`;
 CREATE TABLE IF NOT EXISTS `reservations` (
   `reservation_id` int(11) NOT NULL AUTO_INCREMENT,
   `room_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `reservation_date_from` datetime NOT NULL,
   `reservation_date_to` datetime NOT NULL,
   `reservation_confirmed` tinyint(4) NOT NULL DEFAULT '0',
   `reservation_check_in` tinyint(4) NOT NULL DEFAULT '0',
   `reservation_check_out` tinyint(4) NOT NULL DEFAULT '0',
+  `reservation_user_name` varchar(255) DEFAULT NULL,
+  `reservation_user_surname` varchar(255) DEFAULT NULL,
+  `reservation_user_phone` varchar(20) DEFAULT NULL,
+  `reservation_user_email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`reservation_id`),
   KEY `user_id_fk` (`user_id`),
   KEY `room_reservation_id_fk` (`room_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -210,14 +214,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_login` varchar(255) NOT NULL,
   `user_password` varchar(255) NOT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 --
 -- Vypisuji data pro tabulku `users`
 --
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_surname`, `user_email`, `user_phone`, `user_login`, `user_password`) VALUES
-(7, 'Administrátor', 'Administrátovský', 'example@example.com', '798498614', 'admin', '$2y$10$GZtLeENj7NfbSby.tV8boudc4dbZZCWg0ZnubThl1cMmuIiZyEiUm');
+(7, 'Administrátor', 'Administrátovský', 'example@example.com', '798498614', 'admin', '$2y$10$GZtLeENj7NfbSby.tV8boudc4dbZZCWg0ZnubThl1cMmuIiZyEiUm'),
+(12, 'Zákazník', 'Zákazníkovič', 'example@example.com', '', 'customer', '$2y$10$XJNY0aHpx2Q0CSelrHAfHuFJCg5a6yWVQkF5ACpCbjdEuon5KM0dW'),
+(13, 'Recepční', 'Recepce', 'example@example.com', '', 'receptionist', '$2y$10$BTraKjDVbwIZtMrSwjLc0eMdiIHr68mwwusc1EgCPCe9s6fhEd8fm'),
+(14, 'Vlastník', 'Vlastenecký', 'example@example.com', '', 'owner', '$2y$10$ndttAU4r4mE3rebMw6n0fOaFtA9Rzh2QS5enR02dDgzGAXXLY8u2G');
 
 -- --------------------------------------------------------
 
@@ -233,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
   PRIMARY KEY (`user_role_id`),
   KEY `role_id_fk` (`role_id`),
   KEY `user_role_id_fk` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 --
 -- Vypisuji data pro tabulku `user_roles`
@@ -243,7 +250,13 @@ INSERT INTO `user_roles` (`user_role_id`, `user_id`, `role_id`) VALUES
 (7, 7, 1),
 (8, 7, 4),
 (9, 7, 3),
-(10, 7, 2);
+(10, 7, 2),
+(17, 12, 1),
+(18, 13, 1),
+(19, 13, 2),
+(20, 14, 1),
+(21, 14, 2),
+(22, 14, 3);
 
 --
 -- Omezení pro exportované tabulky

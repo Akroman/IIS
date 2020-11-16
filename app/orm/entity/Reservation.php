@@ -80,6 +80,33 @@ class Reservation extends BaseEntity
 
 
     /**
+     * @return string|null
+     */
+    public function getUserName(): ?string
+    {
+        return $this->get(RESERVATION_USER_NAME);
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getUserSurname(): ?string
+    {
+        return $this->get(RESERVATION_USER_SURNAME);
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getUserEmail(): ?string
+    {
+        return $this->get(RESERVATION_USER_EMAIL);
+    }
+
+
+    /**
      * @return DateTime
      */
     public function getDateFrom(): DateTime

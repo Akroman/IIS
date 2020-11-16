@@ -161,4 +161,12 @@ class UserRepository extends BaseRepository implements IAuthenticator, IAuthoriz
                 . ' WHERE '  . ROLE_ID . ' = ?)', self::ROLE_RECEPTIONIST_ID)
             ->fetchPairs(USER_ID, 'full_name');
     }
+
+
+
+    public function userWithLoginExists(string $login): bool
+    {
+        return $this->getTable()->where(USER_LOGIN, $login)
+            ->count('*') > 0;
+    }
 }

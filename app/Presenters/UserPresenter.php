@@ -34,13 +34,14 @@ class UserPresenter extends BasePresenter
 
 
 
-    public function actionEdit($userId = NULL, $clearForm = FALSE)
+    public function actionEdit($userId = NULL, $clearForm = FALSE, $defaultValues = [])
     {
         $userToEdit = $clearForm
             ? $this->userRepository->createEntity()
             : ($userId
                 ? $this->userRepository->getByID($userId)
                 : $this->loggedUser);
+        $userToEdit->setData($defaultValues);
 
         $this->userFormFactory = new UserFormFactory(
             $userToEdit,
@@ -108,7 +109,9 @@ class UserPresenter extends BasePresenter
 
         if ($this->getUser()->isAllowed('user', 'delete')) {
             $grid->addActionEvent('delete', '', function ($rowId) {
-                $this->userRepository->getTable()->get($rowId)->delete();
+                if ($row = $this->userRepository->getTable()->get($rowId)) {
+                    $row->delete();
+                }
                 $this->flashMessage('Uživatel úspěšně smazán', 'success');
             })
                 ->setCustomRender(function (ActiveRow $row, Html $el) {

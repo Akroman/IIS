@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Definice konstant pro názvy sloupců a tabulek databáze
+ */
 
 define('TABLE_RESERVATIONS',                  'reservations');
 define('RESERVATION_ID',                      'reservation_id');
@@ -10,6 +13,10 @@ define('RESERVATION_DATE_TO',                 'reservation_date_to');
 define('RESERVATION_CONFIRMED',               'reservation_confirmed');
 define('RESERVATION_CHECK_IN',                'reservation_check_in');
 define('RESERVATION_CHECK_OUT',               'reservation_check_out');
+define('RESERVATION_USER_NAME',               'reservation_user_name');
+define('RESERVATION_USER_SURNAME',            'reservation_user_surname');
+define('RESERVATION_USER_PHONE',              'reservation_user_phone');
+define('RESERVATION_USER_EMAIL',              'reservation_user_email');
 
 define('TABLE_ROOMS',                         'rooms');
 define('ROOM_ID',                             'room_id');

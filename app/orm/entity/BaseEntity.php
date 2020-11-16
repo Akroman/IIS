@@ -16,6 +16,9 @@ abstract class BaseEntity extends \YetORM\Entity
     /** @var BaseRepository */
     protected $repository;
 
+    /** @var array */
+    protected $fastData = [];
+
 
 
     public function __construct(BaseRepository $repository, ?ActiveRow $row = NULL)
@@ -63,6 +66,7 @@ abstract class BaseEntity extends \YetORM\Entity
     {
         foreach ($data as $columnName => $value) {
             $this->set($columnName, $value);
+            $this->fastData[$columnName] = $value;
         }
         return $this;
     }
@@ -76,7 +80,7 @@ abstract class BaseEntity extends \YetORM\Entity
     {
         return $this->record->getRow()
             ? $this->record->getRow()->toArray()
-            : [];
+            : $this->fastData;
     }
 
 
@@ -96,7 +100,7 @@ abstract class BaseEntity extends \YetORM\Entity
      */
     protected function findOneToOne(string $table, ?string $throughColumn = NULL): ?ActiveRow
     {
-        return $this->record->getRow()
+        return $this->record->getRow() && $this->record->ref($table, $throughColumn)
             ? $this->record->ref($table, $throughColumn)->getRow()
             : NULL;
     }

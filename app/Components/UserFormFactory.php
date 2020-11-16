@@ -61,7 +61,6 @@ class UserFormFactory
             ->setHtmlAttribute('placeholder', 'Zadejte příjmení ...');
 
         $form->addText(USER_PHONE, 'Telefon')
-            ->setRequired('Prosím vyplňte telefon')
             ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
             ->setHtmlAttribute('placeholder', 'Zadejte telefonní číslo ...');
@@ -106,6 +105,17 @@ class UserFormFactory
         $form->onSuccess[] = [$this, 'onRegisterFormSuccess'];
 
         return $form;
+    }
+
+
+
+    public function onRegisterFormValidate(Form $form): void
+    {
+        $values = $form->getValues(TRUE);
+
+        if ($this->userRepository->userWithLoginExists($values[USER_LOGIN])) {
+            $form->addError('Vybraný login je již zabraný, zvolte prosím jiný');
+        }
     }
 
 

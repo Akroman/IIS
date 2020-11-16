@@ -34,6 +34,9 @@ class ReservationPresenter extends BasePresenter
     /** @var array */
     private $hotelsToFilter = [];
 
+    /** @var bool */
+    private $onlyLoggedUserReservations = FALSE;
+
 
 
     public function actionEdit($roomId, $reservationId = NULL)
@@ -61,6 +64,7 @@ class ReservationPresenter extends BasePresenter
                 $this->error('Na tuto akci nemáte dostatečná oprávnění', IResponse::S403_FORBIDDEN);
             }
             $this->hotelsToFilter = $this->hotelRepository->getTable()->fetchPairs(HOTEL_ID, HOTEL_NAME);
+            $this->onlyLoggedUserReservations = $this->getUser()->getId() == $userId;
 
             $this->reservationSelection->where(USER_ID, $userId);
             $this->template->title = $userId == $this->getUser()->getId()
@@ -155,15 +159,36 @@ class ReservationPresenter extends BasePresenter
     {
         $form = new Form;
 
-        $form->addDatePicker(RESERVATION_DATE_FROM, 'Datum od')
+        $form->addDatePicker(RESERVATION_DATE_FROM, 'Datum od (*)')
             ->setRequired()
-            ->setHtmlAttribute('class', 'form-control form-control-lg date')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
 
-        $form->addDatePicker(RESERVATION_DATE_TO, 'Datum do')
+        $form->addDatePicker(RESERVATION_DATE_TO, 'Datum do (*)')
             ->setRequired()
-            ->setHtmlAttribute('class', 'form-control form-control-lg date')
+            ->setHtmlAttribute('class', 'form-control form-control-lg')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
+        if (!$this->getUser()->isLoggedIn()) {
+            $form->addText(RESERVATION_USER_NAME, 'Jméno (*)')
+                ->setRequired()
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
+            $form->addText(RESERVATION_USER_SURNAME, 'Příjmení (*)')
+                ->setRequired()
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
+            $form->addText(RESERVATION_USER_PHONE, 'Telefon')
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+
+            $form->addEmail(RESERVATION_USER_EMAIL, 'Email (*)')
+                ->setRequired()
+                ->setHtmlAttribute('class', 'form-control form-control-lg')
+                ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;');
+        }
 
         $form->addSubmit('save', 'Uložit rezervaci')
             ->setHtmlAttribute('style', 'margin-bottom:15px;margin-left:15px;')
@@ -185,13 +210,27 @@ class ReservationPresenter extends BasePresenter
         $values = $form->getValues(TRUE);
         try {
             $this->reservation->setRoom($this->room)
-                ->setUser($this->loggedUser)
-                ->setDateFrom($values[RESERVATION_DATE_FROM])
-                ->setDateTo($values[RESERVATION_DATE_TO]);
+                ->setData($values);
+            if ($this->getUser()->isLoggedIn()) {
+                $this->reservation->setUser($this->loggedUser);
+            }
             $this->reservationRepository->persist($this->reservation);
-            $this->flashMessage('Rezervace úspěšně uložena', 'success');
-            $this->redirect('Reservation:default', ['userId' => $this->getUser()->getId()]);
+            if ($this->getUser()->isLoggedIn()) {
+                $this->flashMessage('Rezervace úspěšně uložena.', 'success');
+                $this->redirect('Reservation:default', ['userId' => $this->getUser()->getId()]);
+            } else {
+                $this->flashMessage('Rezervace úspěšně uložena. Pokud chcete, můžete dokončit registraci.', 'success');
+                $this->redirect('User:edit', [
+                    'defaultValues' => [
+                        USER_NAME => $values[RESERVATION_USER_NAME],
+                        USER_SURNAME => $values[RESERVATION_USER_SURNAME],
+                        USER_EMAIL => $values[RESERVATION_USER_EMAIL],
+                        USER_PHONE => $values[RESERVATION_USER_PHONE]
+                    ]
+                ]);
+            }
         } catch (\PDOException $exception) {
+            \Tracy\Debugger::barDump($exception);
             $form->addError('Při ukládání došlo k chybě');
         }
     }
@@ -210,7 +249,7 @@ class ReservationPresenter extends BasePresenter
             $form->addError('Je nám líto, ale Vámi vybrané dny jsou již rezervované.');
         }
 
-        if ($values[RESERVATION_DATE_TO] < $values[RESERVATION_DATE_FROM]) {
+        if ($values[RESERVATION_DATE_TO] <= $values[RESERVATION_DATE_FROM]) {
             $form->addError('Datum od musí být větší než datum do');
         }
     }
@@ -263,17 +302,20 @@ class ReservationPresenter extends BasePresenter
                     ->setText($room->getNumber());
             });
 
-        if ($this->getUser()->isInRole(UserRepository::ROLE_RECEPTIONIST)) {
+        if ($this->getUser()->isInRole(UserRepository::ROLE_RECEPTIONIST) && !$this->onlyLoggedUserReservations) {
             $users = $this->userRepository->getTable()
                 ->select(USER_ID . ', CONCAT_WS(" ", ' . USER_NAME . ', ' . USER_SURNAME.') AS full_name')
                 ->fetchPairs(USER_ID, 'full_name');
             $grid->addColumnLink(USER_ID, 'Uživatel')
                 ->setCustomRender(function (ActiveRow $row) {
-                    $user = $this->reservationRepository->getByID($row[RESERVATION_ID])->getUser();
-                    return Html::el('a', [
-                        'href' => $this->link('User:view', ['userId' => $user->getId()])
-                    ])
-                        ->setText($user->getFullName());
+                    $reservation = $this->reservationRepository->getByID($row[RESERVATION_ID]);
+                    $user = $reservation->getUser();
+                    return $user->isNew()
+                        ? $reservation->getUserName() . ' ' . $reservation->getUserSurname()
+                        : Html::el('a', [
+                            'href' => $this->link('User:view', ['userId' => $user->getId()])
+                        ])
+                            ->setText($user->getFullName());
                 })
                 ->setFilterSelect([0 => '- Všichni -'] + $users)
                 ->setWhere(function ($value, Selection $source) {
@@ -281,6 +323,18 @@ class ReservationPresenter extends BasePresenter
                         $source->where(USER_ID, $value);
                     }
                     return $source;
+                });
+
+            $grid->addColumnEmail(USER_EMAIL, 'Email')
+                ->setCustomRender(function (ActiveRow $row) {
+                    $reservation = $this->reservationRepository->getByID($row[RESERVATION_ID]);
+                    $user = $reservation->getUser();
+                    $emailHref = Html::el('a');
+                    return $user->isNew()
+                        ? $emailHref->setAttribute('href', 'mailto:' . $reservation->getUserEmail())
+                            ->setText($reservation->getUserEmail())
+                        : $emailHref->setAttribute('href', 'mailto:' . $user->getEmail())
+                            ->setText($user->getEmail());
                 });
         }
 
@@ -326,7 +380,7 @@ class ReservationPresenter extends BasePresenter
                     : Html::el('span', ['class' => 'fa fa-close']);
             });
 
-        if ($this->getUser()->isInRole(UserRepository::ROLE_RECEPTIONIST)) {
+        if ($this->getUser()->isInRole(UserRepository::ROLE_RECEPTIONIST) && !$this->onlyLoggedUserReservations) {
             $grid->addActionEvent('confirm', '', function ($rowId) {
                 $reservation = $this->reservationRepository->getByID($rowId);
                 $value = !$reservation->isConfirmed();
@@ -379,6 +433,19 @@ class ReservationPresenter extends BasePresenter
                     $el->style[] = 'margin: 2.5px;';
                     $el->title = 'Check out';
                     return $el->addHtml(Html::el('span', ['class' => 'fa fa-sign-out']));
+                });
+
+            $grid->addActionEvent('delete', '', function ($rowId) {
+                if ($row = $this->reservationRepository->getTable()->get($rowId)) {
+                    $row->delete();
+                }
+                $this->flashMessage('Rezervace úspěšně smazána', 'success');
+            })
+                ->setCustomRender(function (ActiveRow $row, Html $el) {
+                    $el->class[] = 'btn btn-danger';
+                    $el->style[] = 'margin: 2.5px;';
+                    $el->title = 'Smazat';
+                    return $el->addHtml(Html::el('span', ['class' => 'fa fa-trash']));
                 });
         }
 
