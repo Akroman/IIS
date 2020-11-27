@@ -2,29 +2,9 @@
 
 namespace HotelSystem\Components;
 
-/**
- * Nette Framework Extras
- *
- * This source file is subject to the New BSD License.
- *
- * For more information please see http://extras.nettephp.com
- *
- * @copyright  Copyright (c) 2009 David Grudl
- * @license    New BSD License
- * @link       http://extras.nettephp.com
- * @package    Nette Extras
- */
 use Nette\Application\UI\Control;
 use Nette\Utils\Paginator;
 
-/**
- * Visual paginator control.
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2009 David Grudl
- * @package    Nette Extras
- * @property array onShowPage Pokud je nastaven nejaky handler, pouzije se ajax. Jinak natvrdo link na 'this'.
- */
 class VisualPaginator extends Control {
 
     /** @var Paginator */
